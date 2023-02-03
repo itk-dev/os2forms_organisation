@@ -48,8 +48,7 @@ final class SettingsForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container)
-  {
+  public static function create(ContainerInterface $container): SettingsForm {
     return new static(
       $container->get(Settings::class),
       $container->get(CertificateLocatorHelper::class)
@@ -66,9 +65,10 @@ final class SettingsForm extends FormBase {
   /**
    * {@inheritdoc}
    *
-   * @phpstan-param array<string, mixed> $form
+   * @phpstan-param array<string, mixed> $element
+   * @phpstan-return array<string, mixed>
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state): array {
     $defaultValues = $this->settings->getAll();
 
     $form[self::TEST_MODE] = [

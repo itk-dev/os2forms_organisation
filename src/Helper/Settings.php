@@ -41,14 +41,16 @@ final class Settings {
   ];
 
   /**
-   * {@inheritdoc}
+   * The constructor.
    */
   public function __construct(KeyValueFactoryInterface $keyValueFactory) {
     $this->store = $keyValueFactory->get($this->collection);
   }
 
   /**
-   * {@inheritdoc}
+   * Gets all settings.
+   *
+   * @phpstan-return array<string, mixed>
    */
   public function getAll(): array {
     $values = $this->store->getMultiple(array_map([$this, 'buildKey'], $this->keys));
@@ -62,21 +64,28 @@ final class Settings {
   }
 
   /**
-   * {@inheritdoc}
+   * Get setting keys.
+   *
+   * @phpstan-return array<int, mixed>
    */
   public function getKeys(): array {
     return $this->keys;
   }
 
   /**
-   * {@inheritdoc}
+   * Get setting.
+   *
+   * @phpstan-param mixed $default
+   * @phpstan-return mixed
    */
   public function get(string $key, $default = NULL) {
     return $this->store->get($this->buildKey($key), $default);
   }
 
   /**
-   * {@inheritdoc}
+   * Set setting.
+   *
+   * @phpstan-param mixed $value
    */
   public function set(string $key, $value): void {
     $this->store->set($this->buildKey($key), $value);

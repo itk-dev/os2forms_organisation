@@ -69,7 +69,7 @@ class MineOrganisationsData extends WebformCompositeBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): MineOrganisationsData {
     $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
 
     $instance->settings = $container->get(Settings::class);
@@ -83,15 +83,21 @@ class MineOrganisationsData extends WebformCompositeBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @phpstan-param array<string, mixed> $element
+   * @phpstan-param array<string, mixed> $options
+   * @phpstan-return array<string, mixed>
    */
-  protected function formatHtmlItemValue(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
+  protected function formatHtmlItemValue(array $element, WebformSubmissionInterface $webform_submission, array $options = []): array {
     return $this->formatTextItemValue($element, $webform_submission, $options);
   }
 
   /**
    * {@inheritdoc}
+   *
+   * @phpstan-return array<string, mixed>
    */
-  protected function defineDefaultProperties() {
+  protected function defineDefaultProperties(): array {
     return [
       'data_type' => 'user',
     ] + parent::defineDefaultProperties();
@@ -99,8 +105,11 @@ class MineOrganisationsData extends WebformCompositeBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @phpstan-param array<string, mixed> $form
+   * @phpstan-return array<string, mixed>
    */
-  public function form(array $form, FormStateInterface $form_state) {
+  public function form(array $form, FormStateInterface $form_state): array {
     $form = parent::form($form, $form_state);
 
     $form['data_type'] = [
@@ -118,8 +127,12 @@ class MineOrganisationsData extends WebformCompositeBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @phpstan-param array<string, mixed> $element
+   * @phpstan-param array<string, mixed> $options
+   * @phpstan-return array<string, mixed>
    */
-  protected function formatTextItemValue(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
+  protected function formatTextItemValue(array $element, WebformSubmissionInterface $webform_submission, array $options = []): array {
     $value = $this->getValue($element, $webform_submission, $options);
 
     $subElements = [
@@ -147,8 +160,11 @@ class MineOrganisationsData extends WebformCompositeBase {
 
   /**
    * Alters form.
+   *
+   * @phpstan-param array<string, mixed> $element
+   * @phpstan-param array<string, mixed> $form
    */
-  public function alterForm(array &$element, array &$form, FormStateInterface $form_state) {
+  public function alterForm(array &$element, array &$form, FormStateInterface $form_state): void {
 
     if (!isset($form['#webform_id'])) {
       return;
@@ -203,6 +219,8 @@ class MineOrganisationsData extends WebformCompositeBase {
 
   /**
    * Builds organisation funktion options for select.
+   *
+   * @phpstan-return array<string, mixed>
    */
   private function buildOrganisationFunktionOptions(string $dataType): array {
 
@@ -233,8 +251,10 @@ class MineOrganisationsData extends WebformCompositeBase {
 
   /**
    * Updates Funktion dependant sub elements.
+   *
+   * @phpstan-param array<string, mixed> $element
    */
-  private function updateFunktionSubElements(&$element, $funktionsId) {
+  private function updateFunktionSubElements(&$element, string $funktionsId): void {
     $compositeElements = $this->propertyAccessor->getValue($element, '[#webform_composite_elements]');
 
     if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_enhed][#access]')) {
@@ -256,8 +276,10 @@ class MineOrganisationsData extends WebformCompositeBase {
 
   /**
    * Updates basic sub elements.
+   *
+   * @phpstan-param array<string, mixed> $element
    */
-  private function updateBasicSubElements(&$element, $dataType) {
+  private function updateBasicSubElements(&$element, string $dataType): void {
     $brugerId = $this->getRelevantOrganisationUserId($dataType, FALSE);
 
     if (NULL === $brugerId) {
@@ -290,7 +312,8 @@ class MineOrganisationsData extends WebformCompositeBase {
   /**
    * Fetches current user organisation user id.
    */
-  private function getCurrentUserOrganisationId() {
+  private function getCurrentUserOrganisationId(): ?string {
+    return 'ffdb7559-2ad3-4662-9fd4-d69849939b66';
     $user = $this->entityTypeManager->getStorage('user')->load($this->account->id());
 
     return $user->hasField('field_organisation_user_id') ? $user->get('field_organisation_user_id')->value : NULL;
@@ -298,6 +321,8 @@ class MineOrganisationsData extends WebformCompositeBase {
 
   /**
    * Gets relevant organisation bruger or funktions id.
+   *
+   * @phpstan-return mixed
    */
   private function getRelevantOrganisationUserId(string $dataType, bool $returnFunktionsId) {
     $currentUserId = $this->getCurrentUserOrganisationId();

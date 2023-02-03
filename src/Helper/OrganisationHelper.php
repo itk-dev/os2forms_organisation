@@ -118,6 +118,8 @@ class OrganisationHelper {
 
   /**
    * Gets Organisation Funktioner from bruger id.
+   *
+   * @phpstan-return array<int, mixed>
    */
   public function getOrganisationFunktioner(string $brugerId): array {
     return $this->getSF1500()->getOrganisationFunktionerFromUserId($brugerId);
@@ -160,6 +162,8 @@ class OrganisationHelper {
 
   /**
    * Gets manager info for user id.
+   *
+   * @phpstan-return array<int, mixed>
    */
   public function getManagerInfo(string $userId): array {
 

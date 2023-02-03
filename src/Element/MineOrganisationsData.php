@@ -13,9 +13,11 @@ class MineOrganisationsData extends WebformCompositeBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @phpstan-param array<string, mixed> $element
+   * @phpstan-return array<string, mixed>
    */
-  public static function getCompositeElements(array $element): array
-  {
+  public static function getCompositeElements(array $element): array {
     $elements = [];
 
     $elements['name'] = [
