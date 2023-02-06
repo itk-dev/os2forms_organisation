@@ -153,7 +153,6 @@ final class SettingsForm extends FormBase {
       '#default_value' => $certificate['passphrase'] ?? NULL,
     ];
 
-
     $cacheExpiration = $this->settings->getCacheExpiration();
     $form[self::CACHE_EXPIRATION] = [
       '#type' => 'textarea',
@@ -185,7 +184,7 @@ final class SettingsForm extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Leder rolle uuid produktion'),
       '#required' => TRUE,
-      '#default_value' =>  !empty($prodManagerRoleId) ? $prodManagerRoleId : NULL,
+      '#default_value' => !empty($prodManagerRoleId) ? $prodManagerRoleId : NULL,
     ];
 
     $form['actions']['#type'] = 'actions';
