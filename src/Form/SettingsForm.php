@@ -81,7 +81,7 @@ final class SettingsForm extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Authority CVR'),
       '#required' => TRUE,
-      '#default_value' => $this->settings->getAuthorityCVR(),
+      '#default_value' => $this->settings->getAuthorityCvr(),
     ];
 
     $certificate = $this->settings->getCertificate();

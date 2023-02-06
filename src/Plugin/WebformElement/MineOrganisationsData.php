@@ -319,7 +319,6 @@ class MineOrganisationsData extends WebformCompositeBase {
    * Fetches current user organisation user id.
    */
   private function getCurrentUserOrganisationId(): ?string {
-    return 'ffdb7559-2ad3-4662-9fd4-d69849939b66';
     $user = $this->entityTypeManager->getStorage('user')->load($this->account->id());
 
     return $user->hasField('field_organisation_user_id') ? $user->get('field_organisation_user_id')->value : NULL;

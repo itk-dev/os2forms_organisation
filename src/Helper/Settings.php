@@ -43,7 +43,7 @@ final class Settings {
   /**
    * Get authority cvr.
    */
-  public function getAuthorityCVR(): string {
+  public function getAuthorityCvr(): string {
     return $this->get(SettingsForm::AUTHORITY_CVR, '');
   }
 

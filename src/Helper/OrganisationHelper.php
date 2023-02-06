@@ -62,7 +62,7 @@ class OrganisationHelper {
 
       $options = [
         'certificate_locator' => $this->certificateLocator->getCertificateLocator(),
-        'authority_cvr' => $this->settings->getAuthorityCVR(),
+        'authority_cvr' => $this->settings->getAuthorityCvr(),
         'sts_applies_to' => $this->settings->getOrganisationServiceEndpoint(),
         'test_mode' => $this->settings->getTestMode(),
       ];
