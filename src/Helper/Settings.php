@@ -6,6 +6,7 @@ use Drupal\Core\KeyValueStore\KeyValueFactoryInterface;
 use Drupal\Core\KeyValueStore\KeyValueStoreInterface;
 use Drupal\os2forms_organisation\Exception\InvalidSettingException;
 use Drupal\os2forms_organisation\Form\SettingsForm;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * General settings for os2forms_organisation.
@@ -26,21 +27,6 @@ final class Settings {
   private $collection = 'os2forms_organisation.';
 
   /**
-   * The setting keys.
-   *
-   * @var array|string[]
-   */
-  private array $keys = [
-    SettingsForm::TEST_MODE,
-    SettingsForm::AUTHORITY_CVR,
-    SettingsForm::CERTIFICATE,
-    SettingsForm::CACHE_EXPIRATION,
-    SettingsForm::ORGANISATION_SERVICE_ENDPOINT_REFERENCE,
-    SettingsForm::ORGANISATION_TEST_LEDER_ROLLE_UUID,
-    SettingsForm::ORGANISATION_PROD_LEDER_ROLLE_UUID,
-  ];
-
-  /**
    * The constructor.
    */
   public function __construct(KeyValueFactoryInterface $keyValueFactory) {
@@ -48,64 +34,105 @@ final class Settings {
   }
 
   /**
-   * Gets all settings.
-   *
-   * @phpstan-return array<string, mixed>
+   * Get test mode.
    */
-  public function getAll(): array {
-    $values = $this->store->getMultiple(array_map([$this, 'buildKey'], $this->keys));
+  public function getTestMode(): bool {
+    return (bool) $this->get(SettingsForm::TEST_MODE, TRUE);
+  }
 
-    $vals = [];
-    foreach ($values as $key => $value) {
-      $vals[$this->unbuildKey($key)] = $value;
+  /**
+   * Get authority cvr.
+   */
+  public function getAuthorityCVR(): string {
+    return $this->get(SettingsForm::AUTHORITY_CVR, '');
+  }
+
+  /**
+   * Get certificate.
+   */
+  public function getCertificate(): array {
+    $value = $this->get(SettingsForm::CERTIFICATE);
+    return is_array($value) ? $value : [];
+  }
+
+  /**
+   * Get cache expiration.
+   */
+  public function getCacheExpiration(): string {
+    return $this->get(SettingsForm::CACHE_EXPIRATION, '');
+  }
+
+  /**
+   * Get organisation service endpoint.
+   */
+  public function getOrganisationServiceEndpoint(): string {
+    return $this->get(SettingsForm::ORGANISATION_SERVICE_ENDPOINT_REFERENCE, '');
+  }
+
+  /**
+   * Get organisation test manager role id.
+   */
+  public function getOrganisationTestManagerRoleId(): string {
+    return $this->get(SettingsForm::ORGANISATION_TEST_LEDER_ROLLE_UUID, '');
+  }
+
+  /**
+   * Get organisation production manager role id.
+   */
+  public function getOrganisationProductionManagerRoleId(): string {
+    return $this->get(SettingsForm::ORGANISATION_PROD_LEDER_ROLLE_UUID, '');
+  }
+
+  /**
+   * Get a setting value.
+   *
+   * @param string $key
+   *   The key.
+   * @param mixed|null $default
+   *   The default value.
+   *
+   * @return mixed
+   *   The setting value.
+   */
+  private function get(string $key, $default = NULL) {
+    $resolver = $this->getSettingsResolver();
+    if (!$resolver->isDefined($key)) {
+      throw new InvalidSettingException(sprintf('Setting %s is not defined', $key));
     }
 
-    return $vals;
+    return $this->store->get($key, $default);
   }
 
   /**
-   * Get setting keys.
+   * Set settings.
    *
-   * @phpstan-return array<int, mixed>
-   */
-  public function getKeys(): array {
-    return $this->keys;
-  }
-
-  /**
-   * Get setting.
+   * @throws \Symfony\Component\OptionsResolver\Exception\ExceptionInterface
    *
-   * @phpstan-param mixed $default
-   * @phpstan-return mixed
+   * @phpstan-param array<string, mixed> $settings
    */
-  public function get(string $key, $default = NULL) {
-    return $this->store->get($this->buildKey($key), $default);
-  }
-
-  /**
-   * Set setting.
-   *
-   * @phpstan-param mixed $value
-   */
-  public function set(string $key, $value): void {
-    $this->store->set($this->buildKey($key), $value);
-  }
-
-  /**
-   * Build key.
-   */
-  private function buildKey(string $key): string {
-    if (!in_array($key, $this->keys, TRUE)) {
-      throw new InvalidSettingException(sprintf('Invalid setting: %s', $key));
+  public function setSettings(array $settings): self {
+    $settings = $this->getSettingsResolver()->resolve($settings);
+    foreach ($settings as $key => $value) {
+      $this->store->set($key, $value);
     }
-    return $this->collection . $key;
+
+    return $this;
   }
 
   /**
-   * Unbuild key.
+   * Get settings resolver.
    */
-  private function unbuildKey(string $key): string {
-    return 0 === strpos($key, $this->collection) ? substr($key, strlen($this->collection)) : $key;
+  private function getSettingsResolver(): OptionsResolver {
+    return (new OptionsResolver())
+      ->setDefaults([
+        SettingsForm::TEST_MODE => TRUE,
+        SettingsForm::AUTHORITY_CVR => '',
+        SettingsForm::CERTIFICATE => [],
+        SettingsForm::CACHE_EXPIRATION => '',
+        SettingsForm::ORGANISATION_SERVICE_ENDPOINT_REFERENCE => '',
+        SettingsForm::ORGANISATION_TEST_LEDER_ROLLE_UUID => '',
+        SettingsForm::ORGANISATION_PROD_LEDER_ROLLE_UUID => '',
+      ]);
   }
 
 }

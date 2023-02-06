@@ -8,6 +8,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\os2forms_organisation\Helper\CertificateLocatorHelper;
 use Drupal\os2forms_organisation\Helper\Settings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\OptionsResolver\Exception\ExceptionInterface as OptionsResolverException;
 
 /**
  * Organisation settings form.
@@ -69,20 +70,22 @@ final class SettingsForm extends FormBase {
    * @phpstan-return array<string, mixed>
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
-    $defaultValues = $this->settings->getAll();
 
     $form[self::TEST_MODE] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Test mode'),
-      '#default_value' => $defaultValues[self::TEST_MODE] ?? TRUE,
+      '#default_value' => $this->settings->getTestMode(),
     ];
 
     $form[self::AUTHORITY_CVR] = [
       '#type' => 'textfield',
       '#title' => $this->t('Authority CVR'),
       '#required' => TRUE,
-      '#default_value' => $defaultValues[self::AUTHORITY_CVR] ?? NULL,
+      '#default_value' => $this->settings->getAuthorityCVR(),
     ];
+
+
+    $certificate = $this->settings->getCertificate();
 
     $form[self::CERTIFICATE] = [
       '#type' => 'fieldset',
@@ -96,7 +99,7 @@ final class SettingsForm extends FormBase {
           'azure_key_vault' => $this->t('Azure key vault'),
           'file_system' => $this->t('File system'),
         ],
-        '#default_value' => $defaultValues[self::CERTIFICATE]['locator_type'] ?? NULL,
+        '#default_value' => $certificate['locator_type'] ?? NULL,
       ],
     ];
 
@@ -121,7 +124,7 @@ final class SettingsForm extends FormBase {
       $form[self::CERTIFICATE][CertificateLocatorHelper::LOCATOR_TYPE_AZURE_KEY_VAULT][$key] = [
         '#type' => 'textfield',
         '#title' => $info['title'],
-        '#default_value' => $defaultValues[self::CERTIFICATE][CertificateLocatorHelper::LOCATOR_TYPE_AZURE_KEY_VAULT][$key] ?? NULL,
+        '#default_value' => $certificate[CertificateLocatorHelper::LOCATOR_TYPE_AZURE_KEY_VAULT][$key] ?? NULL,
         '#states' => [
           'required' => [':input[name="certificate[locator_type]"]' => ['value' => CertificateLocatorHelper::LOCATOR_TYPE_AZURE_KEY_VAULT]],
         ],
@@ -138,7 +141,7 @@ final class SettingsForm extends FormBase {
       'path' => [
         '#type' => 'textfield',
         '#title' => $this->t('Path'),
-        '#default_value' => $defaultValues[self::CERTIFICATE][CertificateLocatorHelper::LOCATOR_TYPE_FILE_SYSTEM]['path'] ?? NULL,
+        '#default_value' => $certificate[CertificateLocatorHelper::LOCATOR_TYPE_FILE_SYSTEM]['path'] ?? NULL,
         '#states' => [
           'required' => [':input[name="certificate[locator_type]"]' => ['value' => CertificateLocatorHelper::LOCATOR_TYPE_FILE_SYSTEM]],
         ],
@@ -148,22 +151,22 @@ final class SettingsForm extends FormBase {
     $form[self::CERTIFICATE]['passphrase'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Passphrase'),
-      '#default_value' => $defaultValues[self::CERTIFICATE]['passphrase'] ?? NULL,
+      '#default_value' => $certificate['passphrase'] ?? NULL,
     ];
 
     $form[self::CACHE_EXPIRATION] = [
-      '#type' => 'textfield',
+      '#type' => 'textarea',
       '#title' => $this->t('Cache expiration modifier'),
       '#required' => TRUE,
-      '#default_value' => $defaultValues[self::CACHE_EXPIRATION] ?? NULL,
-      '#description' => $this->t('Should be in GNU date input format, e.g. "7am, tomorrow 7am". If multiple are provided, they should be separated by comma, and the first upcoming one is used.'),
+      '#default_value' => $this->settings->getCacheExpiration() ?? NULL,
+      '#description' => $this->t('Should be in GNU date input format, e.g. "tomorrow 7am". If multiple are provided, they should be separated by new line, and the first upcoming one is used.'),
     ];
 
     $form[self::ORGANISATION_SERVICE_ENDPOINT_REFERENCE] = [
       '#type' => 'textfield',
       '#title' => $this->t('Organisation service endpoint reference'),
       '#required' => TRUE,
-      '#default_value' => $defaultValues[self::ORGANISATION_SERVICE_ENDPOINT_REFERENCE] ?? NULL,
+      '#default_value' => $this->settings->getOrganisationServiceEndpoint() ?? NULL,
       '#description' => $this->t('Probably "http://stoettesystemerne.dk/service/organisation/3", but it may very well change in the future.'),
     ];
 
@@ -171,14 +174,14 @@ final class SettingsForm extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Leder rolle uuid test'),
       '#required' => TRUE,
-      '#default_value' => $defaultValues[self::ORGANISATION_TEST_LEDER_ROLLE_UUID] ?? NULL,
+      '#default_value' => $this->settings->getOrganisationTestManagerRoleId() ?? NULL,
     ];
 
     $form[self::ORGANISATION_PROD_LEDER_ROLLE_UUID] = [
       '#type' => 'textfield',
       '#title' => $this->t('Leder rolle uuid produktion'),
       '#required' => TRUE,
-      '#default_value' => $defaultValues[self::ORGANISATION_PROD_LEDER_ROLLE_UUID] ?? NULL,
+      '#default_value' => $this->settings->getOrganisationProductionManagerRoleId() ?? NULL,
     ];
 
     $form['actions']['#type'] = 'actions';
@@ -212,7 +215,7 @@ final class SettingsForm extends FormBase {
 
     // Validate cache expiration.
     try {
-      $cacheExpirationOptions = explode(',', $values[self::CACHE_EXPIRATION]);
+      $cacheExpirationOptions = explode(PHP_EOL, $values[self::CACHE_EXPIRATION]);
       foreach ($cacheExpirationOptions as $cacheExpirationOption) {
         new \DateTime($cacheExpirationOption);
       }
@@ -241,11 +244,21 @@ final class SettingsForm extends FormBase {
       return;
     }
 
-    $values = $formState->getValues();
-    foreach ($this->settings->getKeys() as $key) {
-      if (array_key_exists($key, $values)) {
-        $this->settings->set($key, $values[$key]);
-      }
+
+    try {
+      $settings[self::TEST_MODE] = (bool) $formState->getValue(self::TEST_MODE);
+      $settings[self::AUTHORITY_CVR] = $formState->getValue(self::AUTHORITY_CVR);
+      $settings[self::CERTIFICATE] = $formState->getValue(self::CERTIFICATE);
+      $settings[self::CACHE_EXPIRATION] = $formState->getValue(self::CACHE_EXPIRATION);
+      $settings[self::ORGANISATION_SERVICE_ENDPOINT_REFERENCE] = $formState->getValue(self::ORGANISATION_SERVICE_ENDPOINT_REFERENCE);
+      $settings[self::ORGANISATION_TEST_LEDER_ROLLE_UUID] = $formState->getValue(self::ORGANISATION_TEST_LEDER_ROLLE_UUID);
+      $settings[self::ORGANISATION_PROD_LEDER_ROLLE_UUID] = $formState->getValue(self::ORGANISATION_PROD_LEDER_ROLLE_UUID);
+
+      $this->settings->setSettings($settings);
+      $this->messenger()->addStatus($this->t('Settings saved'));
+    }
+    catch (OptionsResolverException $exception) {
+      $this->messenger()->addError($this->t('Settings not saved (@message)', ['@message' => $exception->getMessage()]));
     }
 
     $this->messenger()->addStatus($this->t('Settings saved'));

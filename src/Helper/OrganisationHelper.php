@@ -58,14 +58,14 @@ class OrganisationHelper {
     if (NULL === $this->sf1500) {
 
       $soapClient = new SoapClient([
-        'cache_expiration_time' => explode(',', $this->settings->get(SettingsForm::CACHE_EXPIRATION)),
+        'cache_expiration_time' => explode(PHP_EOL, $this->settings->getCacheExpiration()),
       ]);
 
       $options = [
         'certificate_locator' => $this->certificateLocator->getCertificateLocator(),
-        'authority_cvr' => $this->settings->get(SettingsForm::AUTHORITY_CVR),
-        'sts_applies_to' => $this->settings->get(SettingsForm::ORGANISATION_SERVICE_ENDPOINT_REFERENCE),
-        'test_mode' => $this->settings->get(SettingsForm::TEST_MODE),
+        'authority_cvr' => $this->settings->getAuthorityCVR(),
+        'sts_applies_to' => $this->settings->getOrganisationServiceEndpoint(),
+        'test_mode' => $this->settings->getTestMode(),
       ];
 
       $sf1514 = new SF1514($soapClient, $options);
@@ -168,9 +168,10 @@ class OrganisationHelper {
   public function getManagerInfo(string $userId): array {
 
     $managerFunktionsTypeId =
-      $this->settings->get(SettingsForm::TEST_MODE)
-        ? $this->settings->get(SettingsForm::ORGANISATION_TEST_LEDER_ROLLE_UUID)
-        : $this->settings->get(SettingsForm::ORGANISATION_PROD_LEDER_ROLLE_UUID);
+      $this->settings->getTestMode()
+        ? $this->settings->getOrganisationTestManagerRoleId()
+        : $this->settings->getOrganisationProductionManagerRoleId();
+
 
     return $this->getSF1500()->getManagerBrugerAndFunktionsIdFromUserId($userId, $managerFunktionsTypeId);
   }

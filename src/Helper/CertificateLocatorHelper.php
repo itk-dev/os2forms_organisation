@@ -37,7 +37,7 @@ class CertificateLocatorHelper {
    * Get certificate locator.
    */
   public function getCertificateLocator(): CertificateLocatorInterface {
-    $certificateSettings = $this->settings->get('certificate');
+    $certificateSettings = $this->settings->getCertificate();
 
     $locatorType = $certificateSettings['locator_type'];
     $options = $certificateSettings[$locatorType];

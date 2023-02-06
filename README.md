@@ -12,7 +12,7 @@ Edit settings on `/admin/os2forms_organisation/settings`.
 ## Drush commands
 
 ```sh
-drush os2forms-organisation:lookup --help
+drush os2forms_organisation:lookup --help
 ```
 
 ## Coding standards

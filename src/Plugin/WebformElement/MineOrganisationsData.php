@@ -237,6 +237,10 @@ class MineOrganisationsData extends WebformCompositeBase {
       $ids = $this->organisationHelper->getOrganisationFunktioner($brugerId);
     }
 
+    if (empty($ids)) {
+      return [];
+    }
+
     // Make them human-readable.
     $options = [];
     foreach ($ids as $id) {
@@ -313,7 +317,6 @@ class MineOrganisationsData extends WebformCompositeBase {
    * Fetches current user organisation user id.
    */
   private function getCurrentUserOrganisationId(): ?string {
-    return 'ffdb7559-2ad3-4662-9fd4-d69849939b66';
     $user = $this->entityTypeManager->getStorage('user')->load($this->account->id());
 
     return $user->hasField('field_organisation_user_id') ? $user->get('field_organisation_user_id')->value : NULL;
@@ -338,13 +341,14 @@ class MineOrganisationsData extends WebformCompositeBase {
       case self::DATA_DISPLAY_OPTION_MANAGER:
         $managerInfo = $this->organisationHelper->getManagerInfo($currentUserId);
 
+        if (empty($managerInfo)) {
+          return [];
+        }
+
         // @todo Handle multiple managers - for now just pick first one.
-        if ($returnFunktionsId) {
-          return reset($managerInfo)['funktionsId'];
-        }
-        else {
-          return reset($managerInfo)['brugerId'];
-        }
+        $managerInfo = reset($managerInfo);
+
+        return $managerInfo[$returnFunktionsId ? 'funktionsId' : 'brugerId'];
     }
 
     throw new InvalidSettingException(sprintf('Invalid data display option provided: %s. Allowed types: %s', $dataType, self::DATA_DISPLAY_OPTION_CURRENT_USER . ', ' . self::DATA_DISPLAY_OPTION_MANAGER));
