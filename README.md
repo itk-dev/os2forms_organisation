@@ -9,6 +9,10 @@ drush pm:enable os2forms_organisation
 
 Edit settings on `/admin/os2forms_organisation/settings`.
 
+**NOTE** This module creates and uses a user field called `field_organisation_user_id`.
+It is up to the using party to ensure it is filled out with the SF1500
+organisation  `bruger` ID. If it is not, nothing is displayed.
+
 ## Drush commands
 
 ```sh
