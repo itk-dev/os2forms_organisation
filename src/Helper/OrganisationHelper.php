@@ -2,7 +2,6 @@
 
 namespace Drupal\os2forms_organisation\Helper;
 
-use Drupal\os2forms_organisation\Form\SettingsForm;
 use ItkDev\Serviceplatformen\Service\SF1500\SF1500;
 use ItkDev\Serviceplatformen\Service\SF1500\SF1500XMLBuilder;
 use ItkDev\Serviceplatformen\Service\SF1514\SF1514;
@@ -171,7 +170,6 @@ class OrganisationHelper {
       $this->settings->getTestMode()
         ? $this->settings->getOrganisationTestManagerRoleId()
         : $this->settings->getOrganisationProductionManagerRoleId();
-
 
     return $this->getSF1500()->getManagerBrugerAndFunktionsIdFromUserId($userId, $managerFunktionsTypeId);
   }

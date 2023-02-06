@@ -66,7 +66,7 @@ final class SettingsForm extends FormBase {
   /**
    * {@inheritdoc}
    *
-   * @phpstan-param array<string, mixed> $element
+   * @phpstan-param array<string, mixed> $form
    * @phpstan-return array<string, mixed>
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
@@ -83,7 +83,6 @@ final class SettingsForm extends FormBase {
       '#required' => TRUE,
       '#default_value' => $this->settings->getAuthorityCVR(),
     ];
-
 
     $certificate = $this->settings->getCertificate();
 
@@ -154,34 +153,39 @@ final class SettingsForm extends FormBase {
       '#default_value' => $certificate['passphrase'] ?? NULL,
     ];
 
+
+    $cacheExpiration = $this->settings->getCacheExpiration();
     $form[self::CACHE_EXPIRATION] = [
       '#type' => 'textarea',
       '#title' => $this->t('Cache expiration modifier'),
       '#required' => TRUE,
-      '#default_value' => $this->settings->getCacheExpiration() ?? NULL,
+      '#default_value' => !empty($cacheExpiration) ? $cacheExpiration : NULL,
       '#description' => $this->t('Should be in GNU date input format, e.g. "tomorrow 7am". If multiple are provided, they should be separated by new line, and the first upcoming one is used.'),
     ];
 
+    $organisationServiceEndpoint = $this->settings->getOrganisationServiceEndpoint();
     $form[self::ORGANISATION_SERVICE_ENDPOINT_REFERENCE] = [
       '#type' => 'textfield',
       '#title' => $this->t('Organisation service endpoint reference'),
       '#required' => TRUE,
-      '#default_value' => $this->settings->getOrganisationServiceEndpoint() ?? NULL,
+      '#default_value' => !empty($organisationServiceEndpoint) ? $organisationServiceEndpoint : NULL,
       '#description' => $this->t('Probably "http://stoettesystemerne.dk/service/organisation/3", but it may very well change in the future.'),
     ];
 
+    $testMangerRoleId = $this->settings->getOrganisationTestManagerRoleId();
     $form[self::ORGANISATION_TEST_LEDER_ROLLE_UUID] = [
       '#type' => 'textfield',
       '#title' => $this->t('Leder rolle uuid test'),
       '#required' => TRUE,
-      '#default_value' => $this->settings->getOrganisationTestManagerRoleId() ?? NULL,
+      '#default_value' => !empty($testMangerRoleId) ? $testMangerRoleId : NULL,
     ];
 
+    $prodManagerRoleId = $this->settings->getOrganisationProductionManagerRoleId();
     $form[self::ORGANISATION_PROD_LEDER_ROLLE_UUID] = [
       '#type' => 'textfield',
       '#title' => $this->t('Leder rolle uuid produktion'),
       '#required' => TRUE,
-      '#default_value' => $this->settings->getOrganisationProductionManagerRoleId() ?? NULL,
+      '#default_value' =>  !empty($prodManagerRoleId) ? $prodManagerRoleId : NULL,
     ];
 
     $form['actions']['#type'] = 'actions';
@@ -243,7 +247,6 @@ final class SettingsForm extends FormBase {
       $this->testCertificate();
       return;
     }
-
 
     try {
       $settings[self::TEST_MODE] = (bool) $formState->getValue(self::TEST_MODE);

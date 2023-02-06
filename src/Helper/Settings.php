@@ -49,6 +49,8 @@ final class Settings {
 
   /**
    * Get certificate.
+   *
+   * @phpstan-return array<string, mixed>
    */
   public function getCertificate(): array {
     $value = $this->get(SettingsForm::CERTIFICATE);
