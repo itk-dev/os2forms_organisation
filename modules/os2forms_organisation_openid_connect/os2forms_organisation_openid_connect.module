@@ -8,7 +8,7 @@
 /**
  * Implements hook_openid_connect_claims_alter().
  */
-function os2forms_organisation_bruger_id_openid_connect_claims_alter(array &$claims) {
+function os2forms_organisation_openid_connect_openid_connect_claims_alter(array &$claims) {
   $claims['organisation_user_id'] = [
     'scope' => 'profile',
     'title' => 'Organisations user ID',
@@ -20,7 +20,7 @@ function os2forms_organisation_bruger_id_openid_connect_claims_alter(array &$cla
 /**
  * Implements hook_openid_connect_userinfo_alter().
  */
-function os2forms_organisation_bruger_id_openid_connect_userinfo_alter(array &$userinfo, array $context) {
+function os2forms_organisation_openid_connect_openid_connect_userinfo_alter(array &$userinfo, array $context) {
   // SF1500 Organisation bruger ID.
   // @see https://digitaliseringskataloget.dk/integration/sf1500
   if (!isset($userinfo['organisation_user_id']) && isset($userinfo['nameidentifier'])) {

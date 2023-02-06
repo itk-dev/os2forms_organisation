@@ -12,5 +12,6 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Added OS2Forms organisation module
+- Added OS2Forms Organisation OpenID Connect module
 
 [Unreleased]: https://github.com/itk-dev/os2forms_organisation/compare/main...HEAD
