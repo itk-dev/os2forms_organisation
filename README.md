@@ -12,6 +12,8 @@ Edit settings on `/admin/os2forms_organisation/settings`.
 **NOTE** This module creates and uses a user field called `field_organisation_user_id`.
 It is up to the using party to ensure it is filled out with the SF1500
 organisation  `bruger` ID. If it is not, nothing is displayed.
+Consider using [OS2Forms Organisation OpenID Connect](modules/os2forms_organisation_openid_connect/README.md)
+for setting this user field if using OpenID Connect.
 
 ## Drush commands
 
