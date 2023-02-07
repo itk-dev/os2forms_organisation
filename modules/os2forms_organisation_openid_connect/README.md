@@ -1,6 +1,7 @@
 # OS2Forms Organisation OpenID Connect
 
-Module for OS2Forms Organisation OpenID Connect.
+Sets the user field `Organisation user ID` used
+in OS2Forms Organisation via OpenID Connect claims.
 
 ## Installation
 
