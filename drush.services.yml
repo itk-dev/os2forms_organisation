@@ -1,5 +1,5 @@
 services:
-  Drupal\os2forms_organisation\Commands\LookupCommands:
+  Drupal\os2forms_organisation\Commands\Commands:
     arguments:
       - '@Drupal\os2forms_organisation\Helper\OrganisationHelper'
     tags:

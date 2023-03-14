@@ -174,4 +174,22 @@ class OrganisationHelper {
     return $this->getSF1500()->getManagerBrugerAndFunktionsIdFromUserId($userId, $managerFunktionsTypeId);
   }
 
+  /**
+   * Search for persons.
+   *
+   * @param array $query
+   *   The search query.
+   *
+   * @return array
+   *   The list of results.
+   *
+   * @phpstan-param array<string, mixed> $query
+   * @phpstan-return array<string, mixed>
+   */
+  public function searchPerson(array $query): array {
+    $result = $this->getSF1500()->getPersonSoeg($query);
+
+    return $result;
+  }
+
 }
