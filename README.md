@@ -25,8 +25,8 @@ drush os2forms_organisation:lookup --help
 ## Coding standards
 
 ```sh
-docker run --rm --interactive --tty --volume ${PWD}:/app itkdev/php7.4-fpm:latest composer install
-docker run --rm --interactive --tty --volume ${PWD}:/app itkdev/php7.4-fpm:latest composer coding-standards-check
+docker run --rm --interactive --tty --volume ${PWD}:/app itkdev/php8.1-fpm:latest composer install
+docker run --rm --interactive --tty --volume ${PWD}:/app itkdev/php8.1-fpm:latest composer coding-standards-check
 
 docker run --rm --interactive --tty --volume ${PWD}:/app node:18 yarn --cwd /app install
 docker run --rm --interactive --tty --volume ${PWD}:/app node:18 yarn --cwd /app coding-standards-check
@@ -35,6 +35,6 @@ docker run --rm --interactive --tty --volume ${PWD}:/app node:18 yarn --cwd /app
 ## Code analysis
 
 ```sh
-docker run --rm --interactive --tty --volume ${PWD}:/app itkdev/php7.4-fpm:latest composer install
-docker run --rm --interactive --tty --volume ${PWD}:/app itkdev/php7.4-fpm:latest composer code-analysis
+docker run --rm --interactive --tty --volume ${PWD}:/app itkdev/php8.1-fpm:latest composer install
+docker run --rm --interactive --tty --volume ${PWD}:/app itkdev/php8.1-fpm:latest composer code-analysis
 ```
