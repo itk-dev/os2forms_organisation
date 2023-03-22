@@ -2,8 +2,10 @@
 
 namespace Drupal\os2forms_organisation\Helper;
 
+use ItkDev\Serviceplatformen\Service\SF1500\AdresseService;
+use ItkDev\Serviceplatformen\Service\SF1500\BrugerService;
+use ItkDev\Serviceplatformen\Service\SF1500\PersonService;
 use ItkDev\Serviceplatformen\Service\SF1500\SF1500;
-use ItkDev\Serviceplatformen\Service\SF1500\SF1500XMLBuilder;
 use ItkDev\Serviceplatformen\Service\SF1514\SF1514;
 use ItkDev\Serviceplatformen\Service\SoapClient;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
@@ -55,7 +57,6 @@ class OrganisationHelper {
   // phpcs:ignore
   private function getSF1500(): SF1500 {
     if (NULL === $this->sf1500) {
-
       $soapClient = new SoapClient([
         'cache_expiration_time' => explode(PHP_EOL, $this->settings->getCacheExpiration()),
       ]);
@@ -69,11 +70,9 @@ class OrganisationHelper {
 
       $sf1514 = new SF1514($soapClient, $options);
 
-      $sf1500XMLBuilder = new SF1500XMLBuilder();
-
       unset($options['sts_applies_to']);
 
-      $this->sf1500 = new SF1500($soapClient, $sf1514, $sf1500XMLBuilder, $this->propertyAccessor, $options);
+      $this->sf1500 = new SF1500($sf1514, $options);
     }
 
     return $this->sf1500;
@@ -175,19 +174,65 @@ class OrganisationHelper {
   }
 
   /**
+   * Search for adresser.
+   *
+   * @param array $query
+   *   The search query.
+   *
+   * @return \ItkDev\Serviceplatformen\Service\SF1500\Model\Adresse[]
+   *   The list of results.
+   *
+   * @phpstan-param array<string, mixed> $query
+   * @phpstan-return array<string, mixed>
+   */
+  public function searchAdresse(array $query): array {
+    /** @var \ItkDev\Serviceplatformen\Service\SF1500\AdresseService $service */
+    $service = $this->getSF1500()->getService(AdresseService::class);
+    $result = $service->soeg($query);
+
+    return $result;
+  }
+
+  /**
    * Search for persons.
    *
    * @param array $query
    *   The search query.
    *
-   * @return array
+   * @return \Digitaliseringskataloget\SF1500\Organisation6\Person\Person[]
+   *   The list of results.
+   *
+   * @phpstan-param array<string, mixed> $query
+   * @phpstan-return array<string, mixed>
+   */
+  public function searchBruger(array $query): array {
+    /** @var \ItkDev\Serviceplatformen\Service\SF1500\BrugerService $service */
+    $service = $this->getSF1500()->getService(BrugerService::class);
+    $result = $service->soeg($query, [
+      'Email_bruger',
+      'Mobiltelefon_bruger',
+      'Lokation_bruger',
+    ]);
+
+    return $result;
+  }
+
+  /**
+   * Search for persons.
+   *
+   * @param array $query
+   *   The search query.
+   *
+   * @return \Digitaliseringskataloget\SF1500\Organisation6\Person\Person[]
    *   The list of results.
    *
    * @phpstan-param array<string, mixed> $query
    * @phpstan-return array<string, mixed>
    */
   public function searchPerson(array $query): array {
-    $result = $this->getSF1500()->getPersonSoeg($query);
+    /** @var \Digitaliseringskataloget\SF1500\Organisation6\Person\PersonService $service */
+    $service = $this->getSF1500()->getService(PersonService::class);
+    $result = $service->soeg($query);
 
     return $result;
   }

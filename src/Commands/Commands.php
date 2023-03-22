@@ -5,7 +5,6 @@ namespace Drupal\os2forms_organisation\Commands;
 use Drupal\os2forms_organisation\Helper\OrganisationHelper;
 use Drush\Commands\DrushCommands;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
-use Symfony\Component\HttpClient\Exception\JsonException;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -103,6 +102,7 @@ class Commands extends DrushCommands {
       'PersonEmail' => $this->helper->getPersonEmail($uuid),
       'PersonPhone' => $this->helper->getPersonPhone($uuid),
       'PersonLocation' => $this->helper->getPersonLocation($uuid),
+      'Id' => $uuid,
     ];
 
     $funktioner = $this->helper->getOrganisationFunktioner($uuid);
@@ -136,21 +136,25 @@ class Commands extends DrushCommands {
    * @param string $type
    *   The object type to search for (user, person, …).
    * @param string $query
-   *   The search query (JSON).
+   *   The search query (JSON)
    *
    * @command os2forms_organisation:search
    *
    * @usage os2forms_organisation:search --help
+   * @usage os2forms_organisation:search person '{"navntekst": "Anders And"}'
+   * @usage os2forms_organisation:search bruger '{"brugernavn": "user"}'
+   * @usage os2forms_organisation:search adresse '{"adressetekst":"rimi@aarhus.dk"}'
    */
   public function search(string $type, string $query): void {
     try {
       $query = json_decode($query, TRUE, 512, JSON_THROW_ON_ERROR);
     }
-    catch (JsonException $exception) {
+    catch (\JsonException) {
       throw new \InvalidArgumentException(sprintf('Invalid JSON: %s', json_encode($query)));
     }
     $result = $this->doSearch($type, $query);
-    $this->output()->writeln(Yaml::dump($result));
+
+    $this->output()->writeln(Yaml::dump(json_decode(json_encode($result), TRUE), PHP_INT_MAX));
   }
 
   /**
@@ -161,6 +165,12 @@ class Commands extends DrushCommands {
    */
   private function doSearch(string $type, array $query): array {
     switch ($type) {
+      case 'adresse':
+        return $this->helper->searchAdresse($query);
+
+      case 'bruger':
+        return $this->helper->searchBruger($query);
+
       case 'person':
         return $this->helper->searchPerson($query);
     }
