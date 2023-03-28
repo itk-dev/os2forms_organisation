@@ -4,6 +4,7 @@ namespace Drupal\os2forms_organisation\Commands;
 
 use Drupal\os2forms_organisation\Helper\OrganisationHelper;
 use Drush\Commands\DrushCommands;
+use ItkDev\Serviceplatformen\Service\Exception\SoapException;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -107,12 +108,13 @@ class Commands extends DrushCommands {
 
     $funktioner = $this->helper->getOrganisationFunktioner($uuid);
     foreach ($funktioner as $funktionsId) {
-      $data['Funktioner'][$funktionsId] = [
+      $data['OrganisationFunktioner'][$funktionsId] = [
         'FunktionsNavn' => $this->helper->getFunktionsNavn($funktionsId),
         'OrganisationEnhed' => $this->helper->getOrganisationEnhed($funktionsId),
         'OrganisationAddress' => $this->helper->getOrganisationAddress($funktionsId),
         'OrganisationEnhedNiveauTo' => $this->helper->getOrganisationEnhedNiveauTo($funktionsId),
         'PersonMagistrat' => $this->helper->getPersonMagistrat($funktionsId),
+        'Id' => $funktionsId,
       ];
     }
 
@@ -150,32 +152,30 @@ class Commands extends DrushCommands {
       $query = json_decode($query, TRUE, 512, JSON_THROW_ON_ERROR);
     }
     catch (\JsonException) {
-      throw new \InvalidArgumentException(sprintf('Invalid JSON: %s', json_encode($query)));
+      throw new InvalidArgumentException(sprintf('Invalid JSON: %s', json_encode($query)));
     }
-    $result = $this->doSearch($type, $query);
+    try {
+      $result = $this->helper->search($type, $query);
 
-    $this->output()->writeln(Yaml::dump(json_decode(json_encode($result), TRUE), PHP_INT_MAX));
-  }
-
-  /**
-   * Do search.
-   *
-   * @phpstan-param array<string, mixed> $query
-   * @phpstan-return array<string, mixed>
-   */
-  private function doSearch(string $type, array $query): array {
-    switch ($type) {
-      case 'adresse':
-        return $this->helper->searchAdresse($query);
-
-      case 'bruger':
-        return $this->helper->searchBruger($query);
-
-      case 'person':
-        return $this->helper->searchPerson($query);
+      $this->output()->writeln(Yaml::dump(json_decode(json_encode($result), TRUE), PHP_INT_MAX));
+    } catch (\Throwable $throwable) {
+      $this->output->writeln($throwable->getMessage());
+      if ($throwable instanceof SoapException) {
+        $this->output->writeln([
+          '',
+          'Request',
+          '',
+          $throwable->getRequest() ?? '',
+          '',
+        ]);
+        $this->output->writeln([
+          'Response',
+          '',
+          $throwable->getResponse() ?? '',
+          '',
+        ]);
+      }
     }
-
-    throw new InvalidArgumentException(sprintf('Invalid type: %s', $type));
   }
 
 }
