@@ -2,6 +2,7 @@
 
 namespace Drupal\os2forms_organisation\Helper;
 
+use Drupal\os2forms_organisation\Exception\InvalidArgumentException;
 use ItkDev\Serviceplatformen\Service\SF1500\AdresseService;
 use ItkDev\Serviceplatformen\Service\SF1500\BrugerService;
 use ItkDev\Serviceplatformen\Service\SF1500\PersonService;
@@ -235,6 +236,27 @@ class OrganisationHelper {
     $result = $service->soeg($query);
 
     return $result;
+  }
+
+  /**
+   * Do search.
+   *
+   * @phpstan-param array<string, mixed> $query
+   * @phpstan-return array<string, mixed>
+   */
+  public function search(string $type, array $query): array {
+    switch ($type) {
+      case 'adresse':
+        return $this->searchAdresse($query);
+
+      case 'bruger':
+        return $this->searchBruger($query);
+
+      case 'person':
+        return $this->searchPerson($query);
+    }
+
+    throw new InvalidArgumentException(sprintf('Invalid search type: %s', $type));
   }
 
 }
