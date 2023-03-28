@@ -127,6 +127,9 @@ final class SearchForm extends FormBase {
 
   /**
    * Render result.
+   *
+   * @phpstan-param array<string, mixed> $parameters
+   * @phpstan-return array<string, mixed>
    */
   private function renderResult(array $parameters): array {
     if (!isset($parameters['type'])) {
@@ -173,8 +176,11 @@ final class SearchForm extends FormBase {
 
   /**
    * Filter query.
+   *
+   * @phpstan-param array<string, mixed> $query
+   * @phpstan-return array<string, mixed>
    */
-  private function filterQuery(array $query) {
+  private function filterQuery(array $query): array {
     return array_filter(
       $query,
       static fn (mixed $value) => NULL !== $value
@@ -183,8 +189,11 @@ final class SearchForm extends FormBase {
 
   /**
    * Form after build handler.
+   *
+   * @phpstan-param array<string, mixed> $form
+   * @phpstan-return array<string, mixed>
    */
-  private function afterBuild(array $form) {
+  private function afterBuild(array $form): array {
     // Remove form fields we don't want in the query string.
     unset($form['form_token'], $form['form_build_id'], $form['form_id']);
 

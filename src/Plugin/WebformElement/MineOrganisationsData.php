@@ -12,6 +12,7 @@ use Drupal\os2forms_organisation\Helper\Settings;
 use Drupal\webform\Plugin\WebformElement\WebformCompositeBase;
 use Drupal\webform\WebformSubmissionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
@@ -76,7 +77,7 @@ class MineOrganisationsData extends WebformCompositeBase {
 
     $instance->settings = $container->get(Settings::class);
     $instance->organisationHelper = $container->get(OrganisationHelper::class);
-    $instance->propertyAccessor = $container->get('property_accessor');
+    $instance->propertyAccessor = PropertyAccess::createPropertyAccessor();
     $instance->routeMatch = $container->get('current_route_match');
     $instance->account = $container->get('current_user');
 

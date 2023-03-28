@@ -10,18 +10,11 @@ use ItkDev\Serviceplatformen\Service\SF1500\PersonService;
 use ItkDev\Serviceplatformen\Service\SF1500\SF1500;
 use ItkDev\Serviceplatformen\Service\SF1514\SF1514;
 use ItkDev\Serviceplatformen\Service\SoapClient;
-use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
  * Organisation Helper service.
  */
 class OrganisationHelper {
-  /**
-   * The PropertyAccessor.
-   *
-   * @var \Symfony\Component\PropertyAccess\PropertyAccessor
-   */
-  private PropertyAccessor $propertyAccessor;
 
   /**
    * The Settings.
@@ -47,8 +40,7 @@ class OrganisationHelper {
   /**
    * Constructor.
    */
-  public function __construct(PropertyAccessor $propertyAccessor, CertificateLocatorHelper $certificateLocator, Settings $settings) {
-    $this->propertyAccessor = $propertyAccessor;
+  public function __construct(CertificateLocatorHelper $certificateLocator, Settings $settings) {
     $this->certificateLocator = $certificateLocator;
     $this->settings = $settings;
   }
@@ -232,7 +224,7 @@ class OrganisationHelper {
    * @phpstan-return array<string, mixed>
    */
   public function searchPerson(array $query): array {
-    /** @var \Digitaliseringskataloget\SF1500\Organisation6\Person\PersonService $service */
+    /** @var \ItkDev\Serviceplatformen\Service\SF1500\PersonService $service */
     $service = $this->getSF1500()->getService(PersonService::class);
     $result = $service->soeg($query);
 

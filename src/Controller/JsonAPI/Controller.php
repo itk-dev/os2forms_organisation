@@ -23,6 +23,8 @@ class Controller extends ControllerBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @phpstan-return self
    */
   public static function create(ContainerInterface $container) {
     return new static(
@@ -45,6 +47,7 @@ class Controller extends ControllerBase {
       $data = array_map(
         static fn (AbstractModel $item) => [
           'type' => $type,
+          // @phpstan-ignore-next-line
           'id' => $item->id,
           'properties' => $item->getData(),
         ],
