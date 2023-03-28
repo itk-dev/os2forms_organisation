@@ -5,6 +5,7 @@ namespace Drupal\os2forms_organisation\Helper;
 use Drupal\os2forms_organisation\Exception\InvalidArgumentException;
 use ItkDev\Serviceplatformen\Service\SF1500\AdresseService;
 use ItkDev\Serviceplatformen\Service\SF1500\BrugerService;
+use ItkDev\Serviceplatformen\Service\SF1500\Model\Bruger;
 use ItkDev\Serviceplatformen\Service\SF1500\PersonService;
 use ItkDev\Serviceplatformen\Service\SF1500\SF1500;
 use ItkDev\Serviceplatformen\Service\SF1514\SF1514;
@@ -210,9 +211,9 @@ class OrganisationHelper {
     /** @var \ItkDev\Serviceplatformen\Service\SF1500\BrugerService $service */
     $service = $this->getSF1500()->getService(BrugerService::class);
     $result = $service->soeg($query, [
-      'Email_bruger',
-      'Mobiltelefon_bruger',
-      'Lokation_bruger',
+      Bruger::FIELD_EMAIL,
+      Bruger::FIELD_MOBILTELEFON,
+      Bruger::FIELD_LOKATION,
     ]);
 
     return $result;

@@ -152,14 +152,14 @@ class Commands extends DrushCommands {
       $query = json_decode($query, TRUE, 512, JSON_THROW_ON_ERROR);
     }
     catch (\JsonException) {
-      throw new InvalidArgumentException(sprintf('Invalid JSON: %s', json_encode($query)));
+      throw new InvalidArgumentException(sprintf('Invalid JSON: %s', $query));
     }
     try {
       $result = $this->helper->search($type, $query);
 
       $this->output()->writeln(Yaml::dump(json_decode(json_encode($result), TRUE), PHP_INT_MAX));
-    } catch (\Throwable $throwable) {
-      $this->output->writeln($throwable->getMessage());
+    }
+    catch (\Throwable $throwable) {
       if ($throwable instanceof SoapException) {
         $this->output->writeln([
           '',
@@ -175,6 +175,8 @@ class Commands extends DrushCommands {
           '',
         ]);
       }
+
+      throw $throwable;
     }
   }
 
