@@ -195,29 +195,41 @@ class MineOrganisationsData extends WebformCompositeBase {
         throw new InvalidSettingException(sprintf('Invalid element configuration. OrganisationData element: %s, should contain a data display option', $form['#webform_id']));
       }
 
-      $options = $this->buildOrganisationFunktionOptions($element['#data_type']);
+      $funktionOptions = $this->buildOrganisationFunktionOptions($element['#data_type']);
 
-      if (empty($options)) {
+      if (empty($funktionOptions)) {
         // A user must have at least one funktion (ansættelse).
         return;
       }
 
       $this->updateBasicSubElements($compositeElement, $element['#data_type']);
 
-      // If there is only one organisation funktion (ansættelse),
-      // preselect it and fill out the elements that require it.
-      // @todo Handle multiple ansættelser with js
-      if (count($options) === 1) {
-        $key = array_key_first($options);
-        $compositeElement['#organisations_funktion__value'] = $key;
-
-        $this->updateFunktionSubElements($compositeElement, $key);
+      // Get all funktion data and pass it on to a JavaScript handler.
+      $data = [];
+      foreach ($funktionOptions as $key => $value) {
+        $data[$key] = $this->getFunktionValues($compositeElement, $key);
       }
+      $emptyValue = '';
+      $compositeElement['#organisations_funktion__empty_value'] = $emptyValue;
+
+      // Create empty values for clearing fields.
+      $values = reset($data);
+      $data[$emptyValue] = array_map(static fn($value) => '', $values);
+
+      $compositeElement['#organisations_funktion__attributes']['data-funktion'] = json_encode([
+        'selector-pattern' => sprintf('[name="%s[%%key%%]"]', $compositeElement['#webform_key']),
+        'values' => $data,
+      ]);
+      $form['#attached']['library'][] = 'os2forms_organisation/os2forms_organisation';
 
       // @see https://www.drupal.org/docs/8/modules/webform/webform-cookbook/how-to-alter-properties-of-a-composites-sub-elements
-      $compositeElement['#organisations_funktion__options'] = $options;
-    }
+      $compositeElement['#organisations_funktion__options'] = $funktionOptions;
 
+      // Preselect organisation funktion (ansættelse) if there's only one.
+      if (count($funktionOptions) === 1) {
+        $compositeElement['#organisations_funktion__value'] = $key;
+      }
+    }
   }
 
   /**
@@ -257,28 +269,43 @@ class MineOrganisationsData extends WebformCompositeBase {
   }
 
   /**
-   * Updates Funktion dependant sub elements.
+   * Get funktion values.
+   *
+   * @param array $element
+   *   The element.
+   * @param string $funktionsId
+   *   The funktion-id.
+   *
+   * @return array
+   *   The values.
    *
    * @phpstan-param array<string, mixed> $element
+   * @phpstan-return array<string, mixed>
    */
-  private function updateFunktionSubElements(&$element, string $funktionsId): void {
+  private function getFunktionValues(array &$element, string $funktionsId): array {
+    $values = [];
+
     $compositeElements = $this->propertyAccessor->getValue($element, '[#webform_composite_elements]');
 
-    if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_enhed][#access]')) {
-      $element['#organisation_enhed__value'] = $this->organisationHelper->getOrganisationEnhed($funktionsId);
+    if (NULL !== $compositeElements) {
+      if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_enhed][#access]')) {
+        $values['organisation_enhed'] = $this->organisationHelper->getOrganisationEnhed($funktionsId);
+      }
+
+      if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_adresse][#access]')) {
+        $values['organisation_adresse'] = $this->organisationHelper->getOrganisationAddress($funktionsId);
+      }
+
+      if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_niveau_2][#access]')) {
+        $values['organisation_niveau_2'] = $this->organisationHelper->getOrganisationEnhedNiveauTo($funktionsId);
+      }
+
+      if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[magistrat][#access]')) {
+        $values['magistrat'] = $this->organisationHelper->getPersonMagistrat($funktionsId);
+      }
     }
 
-    if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_adresse][#access]')) {
-      $element['#organisation_adresse__value'] = $this->organisationHelper->getOrganisationAddress($funktionsId);
-    }
-
-    if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_niveau_2][#access]')) {
-      $element['#organisation_niveau_2__value'] = $this->organisationHelper->getOrganisationEnhedNiveauTo($funktionsId);
-    }
-
-    if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[magistrat][#access]')) {
-      $element['#magistrat__value'] = $this->organisationHelper->getPersonMagistrat($funktionsId);
-    }
+    return $values;
   }
 
   /**

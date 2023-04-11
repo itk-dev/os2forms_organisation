@@ -1,0 +1,4 @@
+os2forms_organisation:
+  version: 1.x
+  js:
+    js/os2forms_organisation.js: {}
