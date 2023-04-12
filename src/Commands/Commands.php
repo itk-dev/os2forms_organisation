@@ -54,7 +54,7 @@ class Commands extends DrushCommands {
    * Read data.
    *
    * @param string $type
-   *   The object type to read (user, person, …).
+   *   The object type to read (bruger).
    * @param string $uuid
    *   The UUID.
    * @param array $options
@@ -75,8 +75,8 @@ class Commands extends DrushCommands {
     $this->readOptions = $options;
 
     switch ($type) {
-      case 'person':
-        $data = $this->readPerson($uuid);
+      case 'bruger':
+        $data = $this->readBruger($uuid);
 
         $this->output()->writeln(Yaml::dump($data, PHP_INT_MAX));
         break;
@@ -91,7 +91,7 @@ class Commands extends DrushCommands {
    *
    * @phpstan-return array<string, mixed>
    */
-  private function readPerson(string $uuid, int $level = 0): array {
+  private function readBruger(string $uuid, int $level = 0): array {
     $maxLevel = $this->readOptions['manager-levels'] ?? 1;
     if ($level > $maxLevel) {
       return [];
@@ -122,7 +122,7 @@ class Commands extends DrushCommands {
     foreach ($managers as $manager) {
       $managerId = $manager['brugerId'] ?? NULL;
       if (NULL !== $managerId && $managerId !== $uuid) {
-        $manager = $this->readPerson($managerId, $level + 1);
+        $manager = $this->readBruger($managerId, $level + 1);
         if (!empty($manager)) {
           $data['Manager'][] = $manager;
         }
