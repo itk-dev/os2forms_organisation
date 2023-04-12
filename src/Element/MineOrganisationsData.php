@@ -51,6 +51,11 @@ class MineOrganisationsData extends WebformCompositeBase {
       '#options' => [],
     ];
 
+    $elements['organisation_funktionsnavn'] = [
+      '#type' => 'textfield',
+      '#title' => t('Organisation funktionsnavn'),
+    ];
+
     $elements['organisation_enhed'] = [
       '#type' => 'textfield',
       '#title' => t('Organisation enhed'),
