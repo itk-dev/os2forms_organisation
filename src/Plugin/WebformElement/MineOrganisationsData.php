@@ -10,6 +10,7 @@ use Drupal\os2forms_organisation\Exception\InvalidSettingException;
 use Drupal\os2forms_organisation\Helper\OrganisationHelper;
 use Drupal\os2forms_organisation\Helper\Settings;
 use Drupal\webform\Plugin\WebformElement\WebformCompositeBase;
+use Drupal\webform\Utility\WebformArrayHelper;
 use Drupal\webform\WebformSubmissionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -115,15 +116,15 @@ class MineOrganisationsData extends WebformCompositeBase {
   public function form(array $form, FormStateInterface $form_state): array {
     $form = parent::form($form, $form_state);
 
-    $form['data_type'] = [
+    WebformArrayHelper::insertBefore($form['composite'], 'element', 'data_type', [
       '#type' => 'select',
-      '#title' => $this->t('Select which data should be displayed'),
+      '#title' => $this->t('Show data for'),
       '#required' => TRUE,
       '#options' => [
         self::DATA_DISPLAY_OPTION_CURRENT_USER => $this->t('Logged in user'),
-        self::DATA_DISPLAY_OPTION_MANAGER => $this->t('Manager of user'),
+        self::DATA_DISPLAY_OPTION_MANAGER => $this->t('Manager of logged in user'),
       ],
-    ];
+    ]);
 
     return $form;
   }
