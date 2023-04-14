@@ -188,7 +188,7 @@ class OrganisationHelper {
   }
 
   /**
-   * Search for persons.
+   * Search for bruger.
    *
    * @param array $query
    *   The search query.

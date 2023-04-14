@@ -87,7 +87,7 @@ class Commands extends DrushCommands {
   }
 
   /**
-   * Read person.
+   * Read bruger.
    *
    * @phpstan-return array<string, mixed>
    */
