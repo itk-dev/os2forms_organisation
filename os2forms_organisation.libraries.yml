@@ -1,4 +1,7 @@
 os2forms_organisation:
   version: 1.x
+  css:
+    theme:
+      assets/os2forms_organisation.css: {}
   js:
-    js/os2forms_organisation.js: {}
+    assets/os2forms_organisation.js: {}
