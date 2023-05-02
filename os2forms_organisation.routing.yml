@@ -5,19 +5,3 @@ os2forms_organisation.admin.settings:
     _title: 'Organisation settings'
   requirements:
     _permission: 'administer site configuration'
-
-os2forms_organisation.jsonapi_search:
-  path: '/os2forms_organisation/jsonapi/search'
-  defaults:
-    _controller: '\Drupal\os2forms_organisation\Controller\JsonAPI\Controller::search'
-    _title: 'Organisation search'
-  requirements:
-    _permission: 'access content'
-
-os2forms_organisation.search:
-  path: '/os2forms_organisation/search'
-  defaults:
-    _form: '\Drupal\os2forms_organisation\Form\SearchForm'
-    _title: 'Organisation search'
-  requirements:
-    _permission: 'administer site configuration'
