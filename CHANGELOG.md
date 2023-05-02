@@ -9,6 +9,11 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- [FORMS-674](https://jira.itkdev.dk/browse/FORMS-674)
+  Search for people
+
 ## [1.0.0] 2023-02-08
 
 ### Added

@@ -20,6 +20,78 @@ class MineOrganisationsData extends WebformCompositeBase {
   public static function getCompositeElements(array $element): array {
     $elements = [];
 
+    $elements['search'] = [
+      '#type' => 'fieldset',
+      '#title' => t('Search'),
+      '#attributes' => [
+        'class' => ['os2forms-organisation-search'],
+      ],
+
+      // We cannot render a "container" element since it is (or may be)
+      // disabled. Therefore we render a start tag here and an end tag below in
+      // "search_query_wrapper_end".
+      'search_query_wrapper_start' => [
+        '#type' => 'markup',
+        '#prefix' => '<div class="os2forms-organisation-search-query">',
+      ],
+
+      'search_query' => [
+        '#type' => 'textfield',
+        '#title' => t('Query'),
+        '#title_display' => 'hidden',
+        '#attributes' => [
+          'placeholder' => t('Search for user name or az-ident'),
+        ],
+      ],
+
+      'search_submit' => [
+        '#type' => 'button',
+        '#value' => t('Search'),
+        '#name' => 'search-submit',
+      ],
+
+      // See "search_query_wrapper_start above".
+      'search_query_wrapper_end' => [
+        '#type' => 'markup',
+        '#suffix' => '</div>',
+      ],
+
+      // We cannot render a "container" element since it is (or may be)
+      // disabled. Therefore we render a start tag here and an end tag below in
+      // "search_result_wrapper_end".
+      'search_result_wrapper_start' => [
+        '#type' => 'markup',
+        '#prefix' => '<div class="os2forms-organisation-search-result">',
+      ],
+
+      'search_user_id' => [
+        '#type' => 'textfield',
+        '#title' => t('User'),
+        '#attributes' => [
+          'data-name' => 'search-user-id',
+        ],
+      ],
+
+      'search_user_apply' => [
+        '#type' => 'button',
+        '#value' => t('Apply user'),
+        '#name' => 'search-user-apply',
+      ],
+
+      // See "search_result_wrapper_start above".
+      'search_result_wrapper_end' => [
+        '#type' => 'markup',
+        '#suffix' => '</div>',
+      ],
+
+      'search_result_table' => [
+        '#type' => 'table',
+        '#attributes' => [
+          'class' => ['os2forms-organisation-search-result-table'],
+        ],
+      ],
+    ];
+
     $elements['name'] = [
       '#type' => 'textfield',
       '#title' => t('Name'),
@@ -49,6 +121,11 @@ class MineOrganisationsData extends WebformCompositeBase {
       '#type' => 'select',
       '#title' => t('Organisations funktion'),
       '#options' => [],
+    ];
+
+    $elements['organisation_funktionsnavn'] = [
+      '#type' => 'textfield',
+      '#title' => t('Organisation funktionsnavn'),
     ];
 
     $elements['organisation_enhed'] = [

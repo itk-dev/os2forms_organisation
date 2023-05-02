@@ -274,7 +274,6 @@ final class SettingsForm extends FormBase {
     try {
       $certificateLocator = $this->certificateLocatorHelper->getCertificateLocator();
       $certificateLocator->getCertificates();
-      $certificateLocator->getAbsolutePathToCertificate();
       $this->messenger()->addStatus($this->t('Certificate succesfully tested'));
     }
     catch (\Throwable $throwable) {

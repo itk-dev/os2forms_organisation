@@ -1,7 +1,4 @@
 services:
-  property_accessor:
-    class: Symfony\Component\PropertyAccess\PropertyAccessor
-
   Drupal\os2forms_organisation\Helper\Settings:
     arguments:
       - "@keyvalue"
@@ -12,6 +9,5 @@ services:
 
   Drupal\os2forms_organisation\Helper\OrganisationHelper:
     arguments:
-      - "@property_accessor"
       - "@Drupal\\os2forms_organisation\\Helper\\CertificateLocatorHelper"
       - "@Drupal\\os2forms_organisation\\Helper\\Settings"
