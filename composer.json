@@ -22,7 +22,7 @@
         "drupal/webform": "^6.1",
         "drush/drush": "^10 || ^11",
         "symfony/options-resolver": "^5.4 || ^6.0",
-        "itk-dev/serviceplatformen": "dev-feature/FORMS-674-search as 1.4.0"
+        "itk-dev/serviceplatformen": "^1.4"
     },
     "require-dev": {
         "drupal/coder": "^8.3",
