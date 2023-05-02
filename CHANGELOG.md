@@ -9,6 +9,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.1.0] 2023-05-02
+
 ### Added
 
 - [FORMS-674](https://jira.itkdev.dk/browse/FORMS-674)
@@ -21,5 +23,6 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Added OS2Forms organisation module
 - Added OS2Forms Organisation OpenID Connect module
 
-[Unreleased]: https://github.com/itk-dev/os2forms_organisation/compare/1.0.0...HEAD
+[Unreleased]: https://github.com/itk-dev/os2forms_organisation/compare/1.1.0...HEAD
+[1.1.0]: https://github.com/itk-dev/os2forms_organisation/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/itk-dev/os2forms_organisation/releases/tag/1.0.0
