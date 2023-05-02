@@ -82,7 +82,7 @@ class Commands extends DrushCommands {
         break;
 
       default:
-        throw new \InvalidArgumentException(sprintf('Unknown type: %s', $type));
+        throw new InvalidArgumentException(sprintf('Unknown type: %s', $type));
     }
   }
 
@@ -135,19 +135,27 @@ class Commands extends DrushCommands {
   /**
    * Search organisation data.
    *
-   * @param string $type
-   *   The object type to search for (user, person, …).
    * @param string $query
    *   The search query (JSON)
+   * @param array $options
+   *   The options.
+   *
+   * @option type
+   *   The object type to search for (adresse, bruger, person).
    *
    * @command os2forms_organisation:search
    *
    * @usage os2forms_organisation:search --help
-   * @usage os2forms_organisation:search person '{"navntekst": "Anders And"}'
-   * @usage os2forms_organisation:search bruger '{"brugernavn": "user"}'
-   * @usage os2forms_organisation:search adresse '{"adressetekst":"rimi@aarhus.dk"}'
+   * @usage os2forms_organisation:search --type=adresse '{"adressetekst":"rimi@aarhus.dk"}'
+   * @usage os2forms_organisation:search --type=bruger '{"brugernavn": "user"}'
+   * @usage os2forms_organisation:search --type=person '{"navntekst": "Anders And"}'
+   * @usage os2forms_organisation:search '{"brugernavn": "user", "navntekst": "James *"}'
+   *
+   * @phpstan-param array<string, mixed> $options
    */
-  public function search(string $type, string $query): void {
+  public function search(string $query, array $options = [
+    'type' => NULL,
+  ]): void {
     try {
       $query = json_decode($query, TRUE, 512, JSON_THROW_ON_ERROR);
     }
@@ -155,7 +163,12 @@ class Commands extends DrushCommands {
       throw new InvalidArgumentException(sprintf('Invalid JSON: %s', $query));
     }
     try {
-      $result = $this->helper->search($type, $query);
+      $result = match ($options['type']) {
+        'adresse' => $this->helper->searchAdresse($query),
+        'bruger' => $this->helper->searchBruger($query),
+        'person' => $this->helper->searchPerson($query),
+        default => $this->helper->search($query)
+      };
 
       $this->output()->writeln(Yaml::dump(json_decode(json_encode($result), TRUE), PHP_INT_MAX));
     }

@@ -13,7 +13,10 @@ use Drupal\os2forms_organisation\Helper\Settings;
 use Drupal\webform\Plugin\WebformElement\WebformCompositeBase;
 use Drupal\webform\Utility\WebformArrayHelper;
 use Drupal\webform\WebformSubmissionInterface;
+use ItkDev\Serviceplatformen\Service\SF1500\AbstractService;
+use ItkDev\Serviceplatformen\Service\SF1500\BrugerService;
 use ItkDev\Serviceplatformen\Service\SF1500\Model\AbstractModel;
+use ItkDev\Serviceplatformen\Service\SF1500\PersonService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
@@ -542,8 +545,11 @@ class MineOrganisationsData extends WebformCompositeBase {
    */
   private function getSearchUserIds(string $query): array {
     $models = [];
-    $models[] = $this->organisationHelper->searchBruger(['brugernavn' => $query]);
-    /* @todo Search by person name */
+    $models[] = $this->organisationHelper->search([
+      BrugerService::FILTER_BRUGERNAVN => $query,
+      PersonService::FILTER_NAVNTEKST => $query,
+      AbstractService::PARAMETER_LIMIT => 10,
+    ]);
 
     return array_map(
       static fn (AbstractModel $model) => $model->id,
