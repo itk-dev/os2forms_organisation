@@ -9,6 +9,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Fixed search (<https://github.com/itk-dev/os2forms_organisation/pull/7>)
+
 ## [1.1.0] 2023-05-02
 
 ### Added

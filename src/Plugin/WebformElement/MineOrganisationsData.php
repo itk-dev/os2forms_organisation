@@ -234,6 +234,10 @@ class MineOrganisationsData extends WebformCompositeBase {
           return;
         }
       }
+      else {
+        // Hide search block.
+        $compositeElement['#search__access'] = FALSE;
+      }
 
       $funktionOptions = $this->buildOrganisationFunktionOptions($dataType);
 
