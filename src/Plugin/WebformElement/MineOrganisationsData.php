@@ -221,16 +221,21 @@ class MineOrganisationsData extends WebformCompositeBase {
       $compositeElement['#search_result__access'] = FALSE;
       $dataType = $element['#data_type'];
       if (self::DATA_DISPLAY_OPTION_SEARCH === $dataType) {
-        if ($organisationElement = $this->isTriggered('search-user-apply')) {
+        // Set names on buttons so we can find the right trigger element.
+        $compositeElement['#search_submit__name'] = $this->getTriggerName('search_submit', $compositeElement);
+        $compositeElement['#search_user_apply__name'] = $this->getTriggerName('search_user_apply', $compositeElement);
+        if ($organisationElement = $this->isTriggered($compositeElement['#search_user_apply__name'])) {
           $parents = $organisationElement['#parents'];
           array_push($parents, 'search_user_id');
           if ($userId = $formState->getValue($parents)) {
+            // Set our user id.
             $formState->set(self::FORM_STATE_USER_ID, $userId);
+            // And display user data.
             $dataType = self::DATA_DISPLAY_OPTION_CURRENT_USER;
           }
         }
         else {
-          $this->handleSearch($element, $form);
+          $this->handleSearch($element, $form, $compositeElement['#search_submit__name']);
           return;
         }
       }
@@ -478,8 +483,8 @@ class MineOrganisationsData extends WebformCompositeBase {
    * @phpstan-param array<string, mixed> $element
    * @phpstan-param array<string, mixed> $form
    */
-  private function handleSearch(array &$element, array &$form): void {
-    if ($organisationElement = $this->isTriggered('search-submit')) {
+  private function handleSearch(array &$element, array &$form, string $triggerName): void {
+    if ($organisationElement = $this->isTriggered($triggerName)) {
       if ($this->formState->isRebuilding()) {
         $storage = $this->formState->getStorage();
         unset($storage[self::FORM_STATE_RESULT_KEY]);
@@ -592,6 +597,21 @@ class MineOrganisationsData extends WebformCompositeBase {
     }
 
     return NULL;
+  }
+
+  /**
+   * Get trigger name.
+   *
+   * @param string $name
+   *   The name.
+   * @param array $element
+   *   The webform element.
+   *
+   * @return string
+   *   The trigger name.
+   */
+  private function getTriggerName(string $name, array $element): string {
+    return $element['#webform_id'] . '-' . $name;
   }
 
 }

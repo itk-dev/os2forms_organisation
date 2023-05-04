@@ -47,7 +47,6 @@ class MineOrganisationsData extends WebformCompositeBase {
       'search_submit' => [
         '#type' => 'button',
         '#value' => t('Search'),
-        '#name' => 'search-submit',
       ],
 
       // See "search_query_wrapper_start above".
@@ -68,6 +67,7 @@ class MineOrganisationsData extends WebformCompositeBase {
         '#type' => 'textfield',
         '#title' => t('User'),
         '#attributes' => [
+          // Must match the selector in os2forms_organisation.js.
           'data-name' => 'search-user-id',
         ],
       ],
@@ -75,7 +75,10 @@ class MineOrganisationsData extends WebformCompositeBase {
       'search_user_apply' => [
         '#type' => 'button',
         '#value' => t('Apply user'),
-        '#name' => 'search-user-apply',
+        '#attributes' => [
+          // Must match the selector in os2forms_organisation.js.
+          'data-name' => 'search-user-apply',
+        ],
       ],
 
       // See "search_result_wrapper_start above".
