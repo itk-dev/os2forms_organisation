@@ -39,6 +39,14 @@ class MineOrganisationsData extends WebformCompositeBase {
   const DATA_DISPLAY_OPTION_MANAGER = 'manager';
   const DATA_DISPLAY_OPTION_SEARCH = 'search';
 
+  private const ORGANISATION_DATA_KEYS = [
+    'organisation_funktionsnavn',
+    'organisation_enhed',
+    'organisation_adresse',
+    'organisation_niveau_2',
+    'magistrat',
+  ];
+
   /**
    * The form state.
    *
@@ -143,6 +151,10 @@ class MineOrganisationsData extends WebformCompositeBase {
     // Hide the search block.
     $form['composite']['element']['search']['#access'] = FALSE;
 
+    // Hide organisations funktion selector element. It will be enabled if any
+    // organisations data is requested.
+    $form['composite']['element']['organisations_funktion']['#access'] = FALSE;
+
     return $form;
   }
 
@@ -216,6 +228,9 @@ class MineOrganisationsData extends WebformCompositeBase {
       }
 
       $form['#attached']['library'][] = 'os2forms_organisation/os2forms_organisation';
+      // Show the organisations_funktion only if some organisation data is
+      // requested.
+      $compositeElement['#organisations_funktion__access'] = $this->funktionDataRequested($compositeElement);
 
       // Hide search result. Will be unhidden if a search is actually performed.
       $compositeElement['#search_result__access'] = FALSE;
@@ -612,6 +627,25 @@ class MineOrganisationsData extends WebformCompositeBase {
    */
   private function getTriggerName(string $name, array $element): string {
     return $element['#webform_id'] . '-' . $name;
+  }
+
+  /**
+   * Decide if any funktion data is requested.
+   *
+   * @param array $element
+   *   The element.
+   *
+   * @return bool
+   *   Whether funktion data is requested.
+   */
+  private function funktionDataRequested(array $element): bool {
+    return !empty(
+      // Filter out elements that have been disabled.
+      array_filter(
+        self::ORGANISATION_DATA_KEYS,
+        static fn ($key) => FALSE !== ($element['#' . $key . '__access'] ?? TRUE)
+      )
+    );
   }
 
 }
