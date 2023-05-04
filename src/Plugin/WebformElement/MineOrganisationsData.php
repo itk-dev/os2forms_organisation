@@ -39,6 +39,14 @@ class MineOrganisationsData extends WebformCompositeBase {
   const DATA_DISPLAY_OPTION_MANAGER = 'manager';
   const DATA_DISPLAY_OPTION_SEARCH = 'search';
 
+  private const ORGANISATION_DATA_KEYS = [
+    'organisation_funktionsnavn',
+    'organisation_enhed',
+    'organisation_adresse',
+    'organisation_niveau_2',
+    'magistrat',
+  ];
+
   /**
    * The form state.
    *
@@ -143,6 +151,10 @@ class MineOrganisationsData extends WebformCompositeBase {
     // Hide the search block.
     $form['composite']['element']['search']['#access'] = FALSE;
 
+    // Hide organisations funktion selector element. It will be enabled if any
+    // organisations data is requested.
+    $form['composite']['element']['organisations_funktion']['#access'] = FALSE;
+
     return $form;
   }
 
@@ -216,23 +228,35 @@ class MineOrganisationsData extends WebformCompositeBase {
       }
 
       $form['#attached']['library'][] = 'os2forms_organisation/os2forms_organisation';
+      // Show the organisations_funktion only if some organisation data is
+      // requested.
+      $compositeElement['#organisations_funktion__access'] = $this->funktionDataRequested($compositeElement);
 
       // Hide search result. Will be unhidden if a search is actually performed.
       $compositeElement['#search_result__access'] = FALSE;
       $dataType = $element['#data_type'];
       if (self::DATA_DISPLAY_OPTION_SEARCH === $dataType) {
-        if ($organisationElement = $this->isTriggered('search-user-apply')) {
+        // Set names on buttons so we can find the right trigger element.
+        $compositeElement['#search_submit__name'] = $this->getTriggerName('search_submit', $compositeElement);
+        $compositeElement['#search_user_apply__name'] = $this->getTriggerName('search_user_apply', $compositeElement);
+        if ($organisationElement = $this->isTriggered($compositeElement['#search_user_apply__name'])) {
           $parents = $organisationElement['#parents'];
           array_push($parents, 'search_user_id');
           if ($userId = $formState->getValue($parents)) {
+            // Set our user id.
             $formState->set(self::FORM_STATE_USER_ID, $userId);
+            // And display user data.
             $dataType = self::DATA_DISPLAY_OPTION_CURRENT_USER;
           }
         }
         else {
-          $this->handleSearch($element, $form);
+          $this->handleSearch($element, $form, $compositeElement['#search_submit__name']);
           return;
         }
+      }
+      else {
+        // Hide search block.
+        $compositeElement['#search__access'] = FALSE;
       }
 
       $funktionOptions = $this->buildOrganisationFunktionOptions($dataType);
@@ -474,8 +498,8 @@ class MineOrganisationsData extends WebformCompositeBase {
    * @phpstan-param array<string, mixed> $element
    * @phpstan-param array<string, mixed> $form
    */
-  private function handleSearch(array &$element, array &$form): void {
-    if ($organisationElement = $this->isTriggered('search-submit')) {
+  private function handleSearch(array &$element, array &$form, string $triggerName): void {
+    if ($organisationElement = $this->isTriggered($triggerName)) {
       if ($this->formState->isRebuilding()) {
         $storage = $this->formState->getStorage();
         unset($storage[self::FORM_STATE_RESULT_KEY]);
@@ -588,6 +612,40 @@ class MineOrganisationsData extends WebformCompositeBase {
     }
 
     return NULL;
+  }
+
+  /**
+   * Get trigger name.
+   *
+   * @param string $name
+   *   The name.
+   * @param array $element
+   *   The webform element.
+   *
+   * @return string
+   *   The trigger name.
+   */
+  private function getTriggerName(string $name, array $element): string {
+    return $element['#webform_id'] . '-' . $name;
+  }
+
+  /**
+   * Decide if any funktion data is requested.
+   *
+   * @param array $element
+   *   The element.
+   *
+   * @return bool
+   *   Whether funktion data is requested.
+   */
+  private function funktionDataRequested(array $element): bool {
+    return !empty(
+      // Filter out elements that have been disabled.
+      array_filter(
+        self::ORGANISATION_DATA_KEYS,
+        static fn ($key) => FALSE !== ($element['#' . $key . '__access'] ?? TRUE)
+      )
+    );
   }
 
 }

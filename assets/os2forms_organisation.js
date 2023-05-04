@@ -35,7 +35,7 @@ window.addEventListener("load", () => {
       const container = el.closest("fieldset");
       try {
         container.querySelector('[data-name="search-user-id"]').value = userId;
-        container.querySelector('[name="search-user-apply"]').click();
+        container.querySelector('[data-name="search-user-apply"]').click();
       } catch (exception) {
         console.debug(exception);
       }
