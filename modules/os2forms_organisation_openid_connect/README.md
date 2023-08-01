@@ -3,6 +3,9 @@
 Sets the user field `Organisation user ID` used
 in OS2Forms Organisation via OpenID Connect claims.
 
+Subscribes to `OrganisationUserIdEvent` and attempts
+setting id from user field, if it has not already been set.
+
 ## Installation
 
 Enable the module:
