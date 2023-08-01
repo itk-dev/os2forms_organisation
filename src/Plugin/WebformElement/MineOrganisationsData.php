@@ -623,6 +623,8 @@ class MineOrganisationsData extends WebformCompositeBase {
    *
    * @return string
    *   The trigger name.
+   *
+   * @phpstan-param array<string, mixed> $element
    */
   private function getTriggerName(string $name, array $element): string {
     return $element['#webform_id'] . '-' . $name;
@@ -636,6 +638,8 @@ class MineOrganisationsData extends WebformCompositeBase {
    *
    * @return bool
    *   Whether funktion data is requested.
+   *
+   * @phpstan-param array<string, mixed> $element
    */
   private function funktionDataRequested(array $element): bool {
     return !empty(
