@@ -37,7 +37,7 @@ class OrganisationUserIdEventSubscriber implements EventSubscriberInterface {
   }
 
   /**
-   * Subsribed events.
+   * Subscribed events.
    */
   public static function getSubscribedEvents(): array {
     return [
@@ -46,7 +46,7 @@ class OrganisationUserIdEventSubscriber implements EventSubscriberInterface {
   }
 
   /**
-   * Attempts settings organisaton user id.
+   * Attempts settings organisation user id.
    */
   public function setOrganisationUserId(OrganisationUserIdEvent $event) {
     // Check if id has already been set.
