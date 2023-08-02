@@ -454,7 +454,7 @@ class MineOrganisationsData extends WebformCompositeBase {
       // Let other modules set organisation user id.
       $event = new OrganisationUserIdEvent();
       $this->eventDispatcher->dispatch($event);
-      $userId = $event->getId();
+      $userId = $event->getUserId();
     }
 
     if (empty($userId)) {

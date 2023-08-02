@@ -15,25 +15,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class OrganisationUserIdEventSubscriber implements EventSubscriberInterface {
 
   /**
-   * The current user.
-   *
-   * @var \Drupal\Core\Session\AccountInterface
-   */
-  protected AccountInterface $currentUser;
-
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected EntityTypeManagerInterface $entityTypeManager;
-
-  /**
    * The constructor.
    */
-  public function __construct(AccountInterface $currentUser, EntityTypeManagerInterface $entityTypeManager) {
-    $this->currentUser = $currentUser;
-    $this->entityTypeManager = $entityTypeManager;
+  public function __construct(private readonly AccountInterface $currentUser, private readonly EntityTypeManagerInterface $entityTypeManager) {
   }
 
   /**
@@ -50,7 +34,7 @@ class OrganisationUserIdEventSubscriber implements EventSubscriberInterface {
    */
   public function setOrganisationUserId(OrganisationUserIdEvent $event) {
     // Check if id has already been set.
-    if (!empty($event->getId())) {
+    if (!empty($event->getUserId())) {
       return;
     }
 
@@ -60,7 +44,7 @@ class OrganisationUserIdEventSubscriber implements EventSubscriberInterface {
       $user = $this->entityTypeManager->getStorage('user')->load($this->currentUser->id());
 
       if ($user->hasField('field_organisation_user_id') && !empty($user->get('field_organisation_user_id')->value)) {
-        $event->setId($user->get('field_organisation_user_id')->value);
+        $event->setUserId($user->get('field_organisation_user_id')->value);
       }
     }
     catch (InvalidPluginDefinitionException | PluginNotFoundException $e) {

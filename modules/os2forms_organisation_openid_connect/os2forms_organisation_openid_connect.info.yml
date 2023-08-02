@@ -6,4 +6,3 @@ core_version_requirement: ^9
 
 dependencies:
   - os2forms_organisation:os2forms_organisation
-  - os2forms_nemlogin_openid_connect:os2forms_nemlogin_openid_connect

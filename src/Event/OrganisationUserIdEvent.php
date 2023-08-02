@@ -8,40 +8,32 @@ use Drupal\Component\EventDispatcher\Event;
  * Organisation user id event.
  */
 class OrganisationUserIdEvent extends Event {
-  const EVENT_NAME = 'organisation_user_id_event';
 
   /**
-   * The id.
+   * The use id.
    *
-   * @var string
+   * @var ?string
    */
-  private string $id;
+  private ?string $userId = NULL;
 
   /**
-   * The constructor.
+   * Get user id.
+   *
+   * @return ?string
+   *   The user id.
    */
-  public function __construct() {
-    $this->id = '';
+  public function getUserId(): ?string {
+    return $this->userId;
   }
 
   /**
-   * Get id.
+   * Set user id.
    *
-   * @return string
-   *   The id.
+   * @param string $userId
+   *   The user id.
    */
-  public function getId(): string {
-    return $this->id;
-  }
-
-  /**
-   * Set id.
-   *
-   * @param string $id
-   *   The id.
-   */
-  public function setId(string $id): void {
-    $this->id = $id;
+  public function setUserId(string $userId): void {
+    $this->userId = $userId;
   }
 
 }
