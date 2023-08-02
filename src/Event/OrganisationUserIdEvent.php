@@ -10,7 +10,7 @@ use Drupal\Component\EventDispatcher\Event;
 class OrganisationUserIdEvent extends Event {
 
   /**
-   * The use id.
+   * The user id.
    *
    * @var ?string
    */
