@@ -9,6 +9,9 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Added `OrganisationUserIdEvent` allowing other modules to set organisation
+  user id. (<https://github.com/itk-dev/os2forms_organisation/pull/9>)
+
 ### Changed
 
 - Fixed search (<https://github.com/itk-dev/os2forms_organisation/pull/7>)
