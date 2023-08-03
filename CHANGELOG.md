@@ -9,7 +9,6 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-
 ## [1.2.0] 2023-08-03
 
 - Added `OrganisationUserIdEvent` allowing other modules to set organisation
