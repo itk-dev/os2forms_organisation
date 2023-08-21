@@ -17,7 +17,16 @@
 .os2forms-organisation-search-result {
   display: none;
 }
-
+#edit-mine-organisation-data-search-submit,
+#edit-mine-organisation-data-search-result-table > tbody > tr > td > button {
+  width: 125px;
+  outline: none;
+  box-shadow: none;
+}
+#edit-mine-organisation-data-search-submit.submit-loading,
+#edit-mine-organisation-data-search-result-table > tbody > tr > td > button {
+  cursor: wait;
+}
 /* Make table a little more compact.
 /*
 .os2forms-organisation-search-result-table td {

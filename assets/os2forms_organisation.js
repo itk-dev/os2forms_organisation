@@ -41,4 +41,24 @@ window.addEventListener("load", () => {
       }
     });
   });
+  document.getElementById("edit-mine-organisation-data-search-submit").addEventListener("click", (e) => {
+      const searchButton = e.target;
+      if (searchButton.classList.contains("submit-loading")) {
+        e.preventDefault();
+        return false;
+      }
+      searchButton.classList.add("submit-loading");
+      searchButton.value = "Henter..";
+    });
+
+    document.querySelector("#edit-mine-organisation-data-search-result-table > tbody > tr > td > button").addEventListener("click", (e) => {
+      const searchButton = e.target;
+      if (searchButton.classList.contains("submit-loading")) {
+        e.preventDefault();
+        return false;
+      }
+      searchButton.classList.add("submit-loading");
+      searchButton.innerHTML = "Henter..";
+    });
+
 });
