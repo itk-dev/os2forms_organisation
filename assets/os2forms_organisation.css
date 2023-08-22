@@ -24,7 +24,7 @@
   box-shadow: none;
 }
 #edit-mine-organisation-data-search-submit.submit-loading,
-#edit-mine-organisation-data-search-result-table > tbody > tr > td > button {
+#edit-mine-organisation-data-search-result-table > tbody > tr > td > button.submit-loading {
   cursor: wait;
 }
 /* Make table a little more compact.
