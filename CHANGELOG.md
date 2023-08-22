@@ -9,6 +9,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Added loading indicators on buttons for search and selection of search results (<https://github.com/itk-dev/os2forms_organisation/pull/11>)
+
 ## [1.2.0] 2023-08-03
 
 - Added `OrganisationUserIdEvent` allowing other modules to set organisation
