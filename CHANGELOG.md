@@ -18,6 +18,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Added loading indicators on buttons for search and selection of search results
   (<https://github.com/itk-dev/os2forms_organisation/pull/11>)
+- Appended wildcard to search queries
+  (<https://github.com/itk-dev/os2forms_organisation/pull/12>)
 
 ## [1.2.0] 2023-08-03
 

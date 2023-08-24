@@ -567,6 +567,16 @@ class MineOrganisationsData extends WebformCompositeBase {
    *   The user ids if any.
    */
   private function getSearchUserIds(string $query): array {
+
+    // Remove extra whitespace.
+    $query = implode(' ', preg_split('/\s+/', $query));
+
+    // Append wildcard character '*' to query string,
+    // if a wildcard is not already present in query.
+    if (!str_contains($query, '*')) {
+      $query .= '*';
+    }
+
     $models = [];
     $models[] = $this->organisationHelper->search([
       BrugerService::FILTER_BRUGERNAVN => $query,
