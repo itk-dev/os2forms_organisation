@@ -567,6 +567,10 @@ class MineOrganisationsData extends WebformCompositeBase {
    *   The user ids if any.
    */
   private function getSearchUserIds(string $query): array {
+
+    // Append wildcard character '*' to query string
+    $query .= '*';
+
     $models = [];
     $models[] = $this->organisationHelper->search([
       BrugerService::FILTER_BRUGERNAVN => $query,
