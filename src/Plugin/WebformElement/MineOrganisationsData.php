@@ -569,11 +569,11 @@ class MineOrganisationsData extends WebformCompositeBase {
   private function getSearchUserIds(string $query): array {
 
     // Remove extra whitespace.
-    $query = implode(' ', array_filter(explode(' ', $query)));
+    $query = implode(' ', preg_split('/\s+/', $query));
 
     // Append wildcard character '*' to query string,
-    // if it is not already present.
-    if (!str_ends_with($query, '*')) {
+    // if a wildcard is not already present in query.
+    if (!str_contains($query, '*')) {
       $query .= '*';
     }
 
