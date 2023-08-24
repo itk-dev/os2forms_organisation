@@ -568,7 +568,7 @@ class MineOrganisationsData extends WebformCompositeBase {
    */
   private function getSearchUserIds(string $query): array {
 
-    // Append wildcard character '*' to query string
+    // Append wildcard character '*' to query string.
     $query .= '*';
 
     $models = [];
