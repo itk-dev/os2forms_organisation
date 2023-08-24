@@ -568,8 +568,14 @@ class MineOrganisationsData extends WebformCompositeBase {
    */
   private function getSearchUserIds(string $query): array {
 
-    // Append wildcard character '*' to query string.
-    $query .= '*';
+    // Remove extra whitespace.
+    $query = implode(' ', array_filter(explode(' ', $query)));
+
+    // Append wildcard character '*' to query string,
+    // if it is not already present.
+    if (!str_ends_with($query, '*')) {
+      $query .= '*';
+    }
 
     $models = [];
     $models[] = $this->organisationHelper->search([
