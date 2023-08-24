@@ -616,9 +616,7 @@ class MineOrganisationsData extends WebformCompositeBase {
   /**
    * Get trigger name.
    *
-   * @param string $name
-   *   The name.
-   * @param array $element
+   * @phpstan-param array<string, mixed> $element
    *   The webform element.
    *
    * @return string
@@ -633,7 +631,7 @@ class MineOrganisationsData extends WebformCompositeBase {
   /**
    * Decide if any funktion data is requested.
    *
-   * @param array $element
+   * @phpstan-param array<string, mixed> $element
    *   The element.
    *
    * @return bool
