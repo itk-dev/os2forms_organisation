@@ -12,12 +12,24 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Updated
 
 - Updated `drush/drush` requirement
+  (<https://github.com/itk-dev/os2forms_organisation/pull/8>)
 
-## [1.1.1] 2023-05-04
+### Added
+
+- Added loading indicators on buttons for search and selection of search results
+  (<https://github.com/itk-dev/os2forms_organisation/pull/11>)
+
+## [1.2.0] 2023-08-03
+
+- Added `OrganisationUserIdEvent` allowing other modules to set organisation
+  user id. (<https://github.com/itk-dev/os2forms_organisation/pull/9>)
 
 ### Changed
 
-- Fixed search (<https://github.com/itk-dev/os2forms_organisation/pull/7>)
+## [1.1.1] 2023-05-04
+
+- Fixed search
+  (<https://github.com/itk-dev/os2forms_organisation/pull/7>)
 
 ## [1.1.0] 2023-05-02
 
@@ -33,7 +45,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Added OS2Forms organisation module
 - Added OS2Forms Organisation OpenID Connect module
 
-[Unreleased]: https://github.com/itk-dev/os2forms_organisation/compare/1.1.1...HEAD
+[Unreleased]: https://github.com/itk-dev/os2forms_organisation/compare/1.2.0...HEAD
+[1.2.0]: https://github.com/itk-dev/os2forms_organisation/compare/1.1.1...1.2.0
 [1.1.1]: https://github.com/itk-dev/os2forms_organisation/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/itk-dev/os2forms_organisation/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/itk-dev/os2forms_organisation/releases/tag/1.0.0

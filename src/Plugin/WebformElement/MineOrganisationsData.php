@@ -6,7 +6,7 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\os2forms_organisation\Event\OrganisationUserIdEvent;
 use Drupal\os2forms_organisation\Exception\InvalidSettingException;
 use Drupal\os2forms_organisation\Helper\OrganisationHelper;
 use Drupal\os2forms_organisation\Helper\Settings;
@@ -20,6 +20,7 @@ use ItkDev\Serviceplatformen\Service\SF1500\PersonService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Provides mine organisation data element.
@@ -83,11 +84,11 @@ class MineOrganisationsData extends WebformCompositeBase {
   private RouteMatchInterface $routeMatch;
 
   /**
-   * Current user.
+   * Event dispatcher.
    *
-   * @var \Drupal\Core\Session\AccountProxyInterface
+   * @var \Symfony\Contracts\EventDispatcher\EventDispatcherInterface
    */
-  private AccountProxyInterface $account;
+  private EventDispatcherInterface $eventDispatcher;
 
   /**
    * {@inheritdoc}
@@ -101,7 +102,7 @@ class MineOrganisationsData extends WebformCompositeBase {
     $instance->organisationHelper = $container->get(OrganisationHelper::class);
     $instance->propertyAccessor = PropertyAccess::createPropertyAccessor();
     $instance->routeMatch = $container->get('current_route_match');
-    $instance->account = $container->get('current_user');
+    $instance->eventDispatcher = $container->get('event_dispatcher');
 
     return $instance;
   }
@@ -438,36 +439,34 @@ class MineOrganisationsData extends WebformCompositeBase {
   }
 
   /**
-   * Fetches current user organisation user id.
-   */
-  private function getCurrentUserOrganisationId(): ?string {
-    if (NULL !== $this->formState && $this->formState->has(self::FORM_STATE_USER_ID)) {
-      return $this->formState->get(self::FORM_STATE_USER_ID);
-    }
-
-    $user = $this->entityTypeManager->getStorage('user')->load($this->account->id());
-
-    return $user->hasField('field_organisation_user_id') ? $user->get('field_organisation_user_id')->value : NULL;
-  }
-
-  /**
    * Gets relevant organisation bruger or funktions id.
    *
    * @phpstan-return mixed
    */
   private function getRelevantOrganisationUserId(string $dataType, bool $returnFunktionsId) {
-    $currentUserId = $this->getCurrentUserOrganisationId();
 
-    if (NULL === $currentUserId) {
+    // If we have a value from form state, use it.
+    if (NULL !== $this->formState && $this->formState->has(self::FORM_STATE_USER_ID)) {
+      $userId = $this->formState->get(self::FORM_STATE_USER_ID);
+    }
+
+    if (empty($userId)) {
+      // Let other modules set organisation user id.
+      $event = new OrganisationUserIdEvent();
+      $this->eventDispatcher->dispatch($event);
+      $userId = $event->getUserId();
+    }
+
+    if (empty($userId)) {
       return NULL;
     }
 
     switch ($dataType) {
       case self::DATA_DISPLAY_OPTION_CURRENT_USER:
-        return $currentUserId;
+        return $userId;
 
       case self::DATA_DISPLAY_OPTION_MANAGER:
-        $managerInfo = $this->organisationHelper->getManagerInfo($currentUserId);
+        $managerInfo = $this->organisationHelper->getManagerInfo($userId);
 
         if (empty($managerInfo)) {
           return [];
@@ -622,6 +621,8 @@ class MineOrganisationsData extends WebformCompositeBase {
    *
    * @return string
    *   The trigger name.
+   *
+   * @phpstan-param array<string, mixed> $element
    */
   private function getTriggerName(string $name, array $element): string {
     return $element['#webform_id'] . '-' . $name;
@@ -635,6 +636,8 @@ class MineOrganisationsData extends WebformCompositeBase {
    *
    * @return bool
    *   Whether funktion data is requested.
+   *
+   * @phpstan-param array<string, mixed> $element
    */
   private function funktionDataRequested(array $element): bool {
     return !empty(
