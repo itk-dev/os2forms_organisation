@@ -51,7 +51,7 @@ window.addEventListener("load", () => {
       searchButton.value = "Henter..";
     });
 
-    document.querySelector("button[data-name='search-user-apply']").addEventListener("click", (e) => {
+    document.querySelector("table.os2forms-organisation-search-result-table > tbody > tr > td > button").addEventListener("click", (e) => {
       const searchButton = e.target;
       if (searchButton.classList.contains("submit-loading")) {
         e.preventDefault();
