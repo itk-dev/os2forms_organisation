@@ -444,7 +444,7 @@ class MineOrganisationsData extends WebformCompositeBase {
    * @phpstan-return mixed
    */
   private function getRelevantOrganisationUserId(string $dataType, bool $returnFunktionsId) {
-
+    return 'c3f1db11-ce3f-41a9-bc2e-41dad2ece5d8';
     // If we have a value from form state, use it.
     if (NULL !== $this->formState && $this->formState->has(self::FORM_STATE_USER_ID)) {
       $userId = $this->formState->get(self::FORM_STATE_USER_ID);
