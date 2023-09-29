@@ -566,6 +566,16 @@ class MineOrganisationsData extends WebformCompositeBase {
    *   The user ids if any.
    */
   private function getSearchUserIds(string $query): array {
+
+    // Remove extra whitespace.
+    $query = implode(' ', preg_split('/\s+/', $query));
+
+    // Append wildcard character '*' to query string,
+    // if a wildcard is not already present in query.
+    if (!str_contains($query, '*')) {
+      $query .= '*';
+    }
+
     $models = [];
     $models[] = $this->organisationHelper->search([
       BrugerService::FILTER_BRUGERNAVN => $query,
@@ -615,9 +625,7 @@ class MineOrganisationsData extends WebformCompositeBase {
   /**
    * Get trigger name.
    *
-   * @param string $name
-   *   The name.
-   * @param array $element
+   * @phpstan-param array<string, mixed> $element
    *   The webform element.
    *
    * @return string
@@ -632,7 +640,7 @@ class MineOrganisationsData extends WebformCompositeBase {
   /**
    * Decide if any funktion data is requested.
    *
-   * @param array $element
+   * @phpstan-param array<string, mixed> $element
    *   The element.
    *
    * @return bool

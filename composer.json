@@ -20,7 +20,7 @@
     "require": {
         "php": "^8.1",
         "drupal/webform": "^6.1",
-        "drush/drush": "^10 || ^11",
+        "drush/drush": "^11 || ^12",
         "symfony/options-resolver": "^5.4 || ^6.0",
         "itk-dev/serviceplatformen": "^1.4"
     },
