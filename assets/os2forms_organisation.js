@@ -41,7 +41,7 @@ window.addEventListener("load", () => {
       }
     });
   });
-  document.getElementById("edit-mine-organisation-data-search-submit").addEventListener("click", (e) => {
+  document.querySelector("input[data-name='search-user-query']").addEventListener("click", (e) => {
       const searchButton = e.target;
       if (searchButton.classList.contains("submit-loading")) {
         e.preventDefault();
@@ -51,7 +51,7 @@ window.addEventListener("load", () => {
       searchButton.value = "Henter..";
     });
 
-    document.querySelector("#edit-mine-organisation-data-search-result-table > tbody > tr > td > button").addEventListener("click", (e) => {
+    document.querySelector("table.os2forms-organisation-search-result-table > tbody > tr > td > button").addEventListener("click", (e) => {
       const searchButton = e.target;
       if (searchButton.classList.contains("submit-loading")) {
         e.preventDefault();
