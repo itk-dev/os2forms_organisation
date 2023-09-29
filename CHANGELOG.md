@@ -9,6 +9,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Fixed loading indicators
+
 ### Added
 
 - Added loading indicators on buttons for search and selection of search results
