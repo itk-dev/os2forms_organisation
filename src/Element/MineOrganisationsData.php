@@ -48,8 +48,8 @@ class MineOrganisationsData extends WebformCompositeBase {
         '#type' => 'button',
         '#value' => t('Search'),
         '#attributes' => [
-          'data-name' => 'search-user-query'
-        ]
+          'data-name' => 'search-user-query',
+        ],
       ],
 
       // See "search_query_wrapper_start above".
