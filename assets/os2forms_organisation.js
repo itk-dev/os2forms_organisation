@@ -53,7 +53,7 @@ window.addEventListener("load", () => {
         return false;
       }
       searchButton.classList.add("submit-loading");
-      searchButton.value = "Henter..";
+      searchButton.value = Drupal.t("Fetching");
     });
 
   document.querySelectorAll("table.os2forms-organisation-search-result-table > tbody > tr > td > button").forEach((el) => {
@@ -64,7 +64,7 @@ window.addEventListener("load", () => {
         return false;
       }
       searchButton.classList.add("submit-loading");
-      searchButton.innerHTML = "Henter..";
+      searchButton.innerHTML = Drupal.t("Fetching");
     });
   });
 
