@@ -17,6 +17,10 @@ window.addEventListener("load", () => {
             const target = document.querySelector(selector);
             if (target) {
               target.value = value;
+
+              // Trigger keyup event to ensure states are run
+              // @see https://www.drupal.org/docs/drupal-apis/form-api/conditional-form-fields#s-the-form-api-states-property
+              target.dispatchEvent(new KeyboardEvent('keyup'));
             }
           }
         }
