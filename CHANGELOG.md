@@ -11,7 +11,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fix
 
-- Ensure drupal states are run
+- Ensure drupal states are run when updating form values with JavaScript.
   (<https://github.com/itk-dev/os2forms_organisation/pull/17>)
 
 ## [1.3.1] 2023-09-29
