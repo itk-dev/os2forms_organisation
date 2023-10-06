@@ -9,6 +9,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fix
+
+- Show loading indicator on all search results
+
 ## [1.3.1] 2023-09-29
 
 ### Fix
