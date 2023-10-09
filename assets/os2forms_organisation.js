@@ -45,6 +45,7 @@ window.addEventListener("load", () => {
       }
     });
   });
+
   document.querySelector("input[data-name='search-user-query']").addEventListener("click", (e) => {
       const searchButton = e.target;
       if (searchButton.classList.contains("submit-loading")) {
@@ -52,17 +53,19 @@ window.addEventListener("load", () => {
         return false;
       }
       searchButton.classList.add("submit-loading");
-      searchButton.value = "Henter..";
+      searchButton.value = Drupal.t("Fetching");
     });
 
-    document.querySelector("table.os2forms-organisation-search-result-table > tbody > tr > td > button").addEventListener("click", (e) => {
+  document.querySelectorAll("table.os2forms-organisation-search-result-table > tbody > tr > td > button").forEach((el) => {
+    el.addEventListener("click", (e) => {
       const searchButton = e.target;
       if (searchButton.classList.contains("submit-loading")) {
         e.preventDefault();
         return false;
       }
       searchButton.classList.add("submit-loading");
-      searchButton.innerHTML = "Henter..";
+      searchButton.innerHTML = Drupal.t("Fetching");
     });
+  });
 
 });

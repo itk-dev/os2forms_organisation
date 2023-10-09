@@ -11,6 +11,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fix
 
+- Show loading indicator on all search results
+- Made searching indicator text value translatable
 - Ensure drupal states are run when updating form values with JavaScript.
   (<https://github.com/itk-dev/os2forms_organisation/pull/17>)
 

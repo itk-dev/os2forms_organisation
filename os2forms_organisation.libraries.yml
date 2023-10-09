@@ -5,3 +5,5 @@ os2forms_organisation:
       assets/os2forms_organisation.css: {}
   js:
     assets/os2forms_organisation.js: {}
+  dependencies:
+    - core/drupal
