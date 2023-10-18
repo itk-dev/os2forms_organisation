@@ -104,7 +104,7 @@ class MineOrganisationsData extends WebformCompositeBase {
           [
             $element['#webform_key'],
           ],
-        ]
+        ],
       ];
 
       $elements['search']['search_user_apply'] += [
@@ -112,7 +112,7 @@ class MineOrganisationsData extends WebformCompositeBase {
           [
             $element['#webform_key'],
           ],
-        ]
+        ],
       ];
     }
 
