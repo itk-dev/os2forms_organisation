@@ -98,6 +98,24 @@ class MineOrganisationsData extends WebformCompositeBase {
       ],
     ];
 
+    if (isset($element['#webform_key'])) {
+      $elements['search']['search_submit'] += [
+        '#limit_validation_errors' => [
+          [
+            $element['#webform_key'],
+          ],
+        ],
+      ];
+
+      $elements['search']['search_user_apply'] += [
+        '#limit_validation_errors' => [
+          [
+            $element['#webform_key'],
+          ],
+        ],
+      ];
+    }
+
     $elements['name'] = [
       '#type' => 'textfield',
       '#title' => t('Name'),
