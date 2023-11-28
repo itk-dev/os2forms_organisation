@@ -41,7 +41,7 @@ class MineOrganisationsData extends WebformCompositeBase {
   const DATA_DISPLAY_OPTION_SEARCH = 'search';
 
   private const ORGANISATION_DATA_KEYS = [
-    'organisation_funktionsnavn',
+    'stillingsbetegnelse',
     'organisation_enhed',
     'organisation_adresse',
     'organisation_niveau_2',
@@ -175,7 +175,7 @@ class MineOrganisationsData extends WebformCompositeBase {
       'az',
       'phone',
       'location',
-      'organisation_funktionsnavn',
+      'stillingsbetegnelse',
       'organisation_enhed',
       'organisation_adresse',
       'organisation_niveau_2',
@@ -274,6 +274,7 @@ class MineOrganisationsData extends WebformCompositeBase {
       foreach ($funktionOptions as $key => $value) {
         $data[$key] = $this->getFunktionValues($compositeElement, $key);
       }
+
       $emptyValue = '';
       $compositeElement['#organisations_funktion__empty_value'] = $emptyValue;
 
@@ -401,8 +402,8 @@ class MineOrganisationsData extends WebformCompositeBase {
     $compositeElements = $this->propertyAccessor->getValue($element, '[#webform_composite_elements]');
 
     if (NULL !== $compositeElements) {
-      if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_funktionsnavn][#access]')) {
-        $values['organisation_funktionsnavn'] = $this->organisationHelper->getFunktionsNavn($funktionsId);
+      if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[stillingsbetegnelse][#access]')) {
+        $values['stillingsbetegnelse'] = $this->organisationHelper->getFunktionsNavn($funktionsId);
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_enhed][#access]')) {

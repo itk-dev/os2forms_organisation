@@ -147,9 +147,9 @@ class MineOrganisationsData extends WebformCompositeBase {
       '#options' => [],
     ];
 
-    $elements['organisation_funktionsnavn'] = [
+    $elements['stillingsbetegnelse'] = [
       '#type' => 'textfield',
-      '#title' => t('Organisation funktionsnavn'),
+      '#title' => t('Stillingsbetegnelse'),
     ];
 
     $elements['organisation_enhed'] = [

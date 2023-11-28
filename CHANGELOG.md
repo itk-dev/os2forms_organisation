@@ -9,6 +9,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Renamed `organisation_funktionsnavn` to `stillingsbetegnelse`.
+
 ## [1.3.3] 2023-10-18
 
 - Limited validation on `search_submit` and `search_user_apply` buttons.
