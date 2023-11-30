@@ -9,6 +9,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Made all elements except selector readonly.
 - Renamed `organisation_funktionsnavn` to `stillingsbetegnelse`.
 
 ## [1.3.3] 2023-10-18
