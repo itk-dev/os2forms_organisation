@@ -10,6 +10,7 @@ use Drupal\os2forms_organisation\Event\OrganisationUserIdEvent;
 use Drupal\os2forms_organisation\Exception\InvalidSettingException;
 use Drupal\os2forms_organisation\Helper\OrganisationHelper;
 use Drupal\os2forms_organisation\Helper\Settings;
+use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\Plugin\WebformElement\WebformCompositeBase;
 use Drupal\webform\Utility\WebformArrayHelper;
 use Drupal\webform\WebformSubmissionInterface;
@@ -147,6 +148,15 @@ class MineOrganisationsData extends WebformCompositeBase {
         self::DATA_DISPLAY_OPTION_MANAGER => $this->t('Manager of logged in user'),
         self::DATA_DISPLAY_OPTION_SEARCH => $this->t('Search'),
       ],
+    ]);
+
+    WebformArrayHelper::insertBefore($form['composite'], 'data_type', 'message_test', [
+      '#type' => 'webform_message',
+      '#message_message' => $this->t('Data is fetched from SF1500, Fælleskommunalt Organisationssystem.'),
+      '#message_type' => 'info',
+      '#message_close' => TRUE,
+      '#message_storage' => WebformMessage::STORAGE_SESSION,
+      '#access' => TRUE,
     ]);
 
     // Hide the search block.
