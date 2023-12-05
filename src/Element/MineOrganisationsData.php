@@ -119,31 +119,31 @@ class MineOrganisationsData extends WebformCompositeBase {
     $elements['name'] = [
       '#type' => 'textfield',
       '#title' => t('Name'),
-      '#readonly' => true,
+      '#readonly' => TRUE,
     ];
 
     $elements['email'] = [
       '#type' => 'textfield',
       '#title' => t('Email'),
-      '#readonly' => true,
+      '#readonly' => TRUE,
     ];
 
     $elements['az'] = [
       '#type' => 'textfield',
       '#title' => t('AZ-ident'),
-      '#readonly' => true,
+      '#readonly' => TRUE,
     ];
 
     $elements['phone'] = [
       '#type' => 'textfield',
       '#title' => t('Phone'),
-      '#readonly' => true,
+      '#readonly' => TRUE,
     ];
 
     $elements['location'] = [
       '#type' => 'textfield',
       '#title' => t('Location'),
-      '#readonly' => true,
+      '#readonly' => TRUE,
     ];
 
     $elements['organisations_funktion'] = [
@@ -155,31 +155,31 @@ class MineOrganisationsData extends WebformCompositeBase {
     $elements['stillingsbetegnelse'] = [
       '#type' => 'textfield',
       '#title' => t('Stillingsbetegnelse'),
-      '#readonly' => true,
+      '#readonly' => TRUE,
     ];
 
     $elements['organisation_enhed'] = [
       '#type' => 'textfield',
       '#title' => t('Organisation enhed'),
-      '#readonly' => true,
+      '#readonly' => TRUE,
     ];
 
     $elements['organisation_adresse'] = [
       '#type' => 'textfield',
       '#title' => t('Organisation enheds adresse'),
-      '#readonly' => true,
+      '#readonly' => TRUE,
     ];
 
     $elements['organisation_niveau_2'] = [
       '#type' => 'textfield',
       '#title' => t('Organisation enhed niveau to'),
-      '#readonly' => true,
+      '#readonly' => TRUE,
     ];
 
     $elements['magistrat'] = [
       '#type' => 'textfield',
       '#title' => t('Magistrat'),
-      '#readonly' => true,
+      '#readonly' => TRUE,
     ];
 
     return $elements;

@@ -279,6 +279,13 @@ class MineOrganisationsData extends WebformCompositeBase {
 
       $this->updateBasicSubElements($compositeElement, $element['#data_type']);
 
+      // Preselect organisation funktion (ansættelse) if there's only one.
+      if (count($funktionOptions) === 1) {
+        $compositeElement['#organisations_funktion__access'] = FALSE;
+        $this->updateFunktionSubElements($compositeElement, array_key_first($funktionOptions));
+        return;
+      }
+
       // Get all funktion data and pass it on to a JavaScript handler.
       $data = [];
       foreach ($funktionOptions as $key => $value) {
@@ -300,10 +307,6 @@ class MineOrganisationsData extends WebformCompositeBase {
       // @see https://www.drupal.org/docs/8/modules/webform/webform-cookbook/how-to-alter-properties-of-a-composites-sub-elements
       $compositeElement['#organisations_funktion__options'] = $funktionOptions;
 
-      // Preselect organisation funktion (ansættelse) if there's only one.
-      if (count($funktionOptions) === 1) {
-        $compositeElement['#organisations_funktion__value'] = $key;
-      }
     }
   }
 
@@ -443,6 +446,19 @@ class MineOrganisationsData extends WebformCompositeBase {
    */
   private function updateBasicSubElements(&$element, string $dataType): void {
     $values = $this->getBasicValues($element, $dataType);
+
+    foreach ($values as $key => $value) {
+      $element['#' . $key . '__value'] = $value;
+    }
+  }
+
+  /**
+   * Updates basic sub elements.
+   *
+   * @phpstan-param array<string, mixed> $element
+   */
+  private function updateFunktionSubElements(&$element, string $funktionsId): void {
+    $values = $this->getFunktionValues($element, $funktionsId);
 
     foreach ($values as $key => $value) {
       $element['#' . $key . '__value'] = $value;
