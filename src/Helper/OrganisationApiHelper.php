@@ -170,7 +170,7 @@ class OrganisationApiHelper {
    *
    * @phpstan-return array<string, mixed>
    */
-  public function searchBruger(string $query): ?array {
+  public function searchBruger(string $query, bool $forwardException = FALSE): ?array {
     try {
       $response = $this->get('bruger?page=1&navn=' . $query);
 
@@ -182,6 +182,10 @@ class OrganisationApiHelper {
 
     }
     catch (ApiException $e) {
+      if ($forwardException) {
+        throw $e;
+      }
+
       return NULL;
     }
 
@@ -201,6 +205,8 @@ class OrganisationApiHelper {
 
   /**
    * Get response contents as array.
+   *
+   * @phpstan-return array<string, mixed>
    */
   private function getResponseContentsAsArray(ResponseInterface $response): array {
     return json_decode($response->getBody()->getContents(), TRUE);

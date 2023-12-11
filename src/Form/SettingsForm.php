@@ -68,8 +68,7 @@ final class SettingsForm extends FormBase {
     $organisationApiEndpoint = $this->settings->getOrganisationApiEndpoint();
     $form[self::ORGANISATION_API_ENDPOINT] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Organisation base API endpoint'),
-      '#description' => $this->t('Base endpoint Organisation API'),
+      '#title' => $this->t('Organisation API endpoint'),
       '#required' => TRUE,
       '#default_value' => !empty($organisationApiEndpoint) ? $organisationApiEndpoint : NULL,
     ];
@@ -121,7 +120,7 @@ final class SettingsForm extends FormBase {
    */
   private function testApi(): void {
     try {
-      $this->helper->searchBruger('Admin Jensen');
+      $this->helper->searchBruger('Admin Jensen', TRUE);
       $this->messenger()->addStatus($this->t('API successfully tested'));
     }
     catch (\Exception $exception) {
