@@ -135,6 +135,8 @@ class OrganisationApiHelper {
   /**
    * Do get request.
    *
+   * @phpstan-param array<string, mixed> $options
+   *
    * @throws \Drupal\os2forms_organisation\Exception\ApiException
    *   API exception.
    */
