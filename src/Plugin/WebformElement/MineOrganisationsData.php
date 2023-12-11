@@ -4,11 +4,11 @@ namespace Drupal\os2forms_organisation\Plugin\WebformElement;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerTrait;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\os2forms_organisation\Event\OrganisationUserIdEvent;
 use Drupal\os2forms_organisation\Exception\InvalidSettingException;
-use Drupal\os2forms_organisation\Exception\InvalidStateException;
 use Drupal\os2forms_organisation\Helper\OrganisationApiHelper;
 use Drupal\os2forms_organisation\Helper\Settings;
 use Drupal\webform\Plugin\WebformElement\WebformCompositeBase;
@@ -33,6 +33,8 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  * )
  */
 class MineOrganisationsData extends WebformCompositeBase {
+  use MessengerTrait;
+
   const DATA_DISPLAY_OPTION_CURRENT_USER = 'current_user';
   const DATA_DISPLAY_OPTION_MANAGER = 'manager';
   const DATA_DISPLAY_OPTION_SEARCH = 'search';
@@ -378,7 +380,7 @@ class MineOrganisationsData extends WebformCompositeBase {
 
     // Make them human-readable.
     $options = [];
-    foreach ($this->funktionInformation as $funktion) {
+    foreach ($this->funktionInformation ?? [] as $funktion) {
       $options[$funktion['id']] = $funktion['enhedsnavn'] . ', ' . $funktion['funktionsnavn'];
     }
 
@@ -420,7 +422,7 @@ class MineOrganisationsData extends WebformCompositeBase {
     };
 
     if (NULL === $data) {
-      throw new InvalidStateException(sprintf('Information for %s not set correctly', $dataType));
+      $this->messenger()->addMessage($this->t('Could not fetch organisation data. Contact form owner.'));
     }
 
     $compositeElements = $this->propertyAccessor->getValue($element, '[#webform_composite_elements]');
@@ -469,36 +471,39 @@ class MineOrganisationsData extends WebformCompositeBase {
 
     if (NULL !== $compositeElements) {
 
+      $funktionInformation = $this->funktionInformation ?? [];
+      $organisationInformation = $this->organisationInformation ?? [];
+
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_funktionsnavn][#access]')) {
         $values['organisation_funktionsnavn'] = &NestedArray::getValue(
-          $this->funktionInformation,
+          $funktionInformation,
           [$funktionsId, 'funktionsnavn']
         );
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_enhed][#access]')) {
         $values['organisation_enhed'] = &NestedArray::getValue(
-          $this->funktionInformation,
+          $funktionInformation,
           [$funktionsId, 'enhedsnavn']
         );
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_adresse][#access]')) {
         $values['organisation_adresse'] = &NestedArray::getValue(
-          $this->funktionInformation,
+          $funktionInformation,
           [$funktionsId, 'adresse']
         );
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_niveau_2][#access]')) {
         $values['organisation_niveau_2'] = &NestedArray::getValue(
-          $this->organisationInformation,
+          $organisationInformation,
           [$funktionsId, 1, 'enhedsnavn']
         );
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[magistrat][#access]')) {
-        $organisationArray = $this->organisationInformation[$funktionsId];
+        $organisationArray = $organisationInformation[$funktionsId];
         // Notice the -2 rather than -1, since the last entry will be 'Kommune'.
         $values['magistrat'] = &NestedArray::getValue(
           $organisationArray,
@@ -644,6 +649,10 @@ class MineOrganisationsData extends WebformCompositeBase {
   private function getSearchUserIds(string $query): array {
 
     $brugere = $this->organisationHelper->searchBruger($query);
+
+    if (NULL === $brugere) {
+      $this->messenger()->addMessage($this->t('Could not fetch organisation data. Contact form owner.'));
+    }
 
     return array_map(static fn($value) => $value['id'], $brugere);
   }

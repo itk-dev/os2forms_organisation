@@ -6,3 +6,4 @@ services:
   Drupal\os2forms_organisation\Helper\OrganisationApiHelper:
     arguments:
       - "@Drupal\\os2forms_organisation\\Helper\\Settings"
+      - "@http_client"

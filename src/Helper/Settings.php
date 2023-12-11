@@ -37,7 +37,7 @@ final class Settings {
    * Get organisation API endpoint.
    */
   public function getOrganisationApiEndpoint(): string {
-    return $this->get(SettingsForm::ORGANISATION_BASE_API_ENDPOINT, '');
+    return $this->get(SettingsForm::ORGANISATION_API_ENDPOINT, '');
   }
 
   /**
@@ -82,7 +82,7 @@ final class Settings {
   private function getSettingsResolver(): OptionsResolver {
     return (new OptionsResolver())
       ->setDefaults([
-        SettingsForm::ORGANISATION_BASE_API_ENDPOINT => '',
+        SettingsForm::ORGANISATION_API_ENDPOINT => '',
       ]);
   }
 
