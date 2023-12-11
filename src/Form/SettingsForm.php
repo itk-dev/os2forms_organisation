@@ -120,7 +120,7 @@ final class SettingsForm extends FormBase {
    */
   private function testApi(): void {
     try {
-      $this->helper->searchBruger('Admin Jensen', TRUE);
+      $this->helper->searchBruger('Admin Jensen');
       $this->messenger()->addStatus($this->t('API successfully tested'));
     }
     catch (\Exception $exception) {

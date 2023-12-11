@@ -8,6 +8,7 @@ use Drupal\Core\Messenger\MessengerTrait;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\os2forms_organisation\Event\OrganisationUserIdEvent;
+use Drupal\os2forms_organisation\Exception\ApiException;
 use Drupal\os2forms_organisation\Exception\InvalidSettingException;
 use Drupal\os2forms_organisation\Helper\OrganisationApiHelper;
 use Drupal\os2forms_organisation\Helper\Settings;
@@ -648,13 +649,17 @@ class MineOrganisationsData extends WebformCompositeBase {
    */
   private function getSearchUserIds(string $query): array {
 
-    $brugere = $this->organisationHelper->searchBruger($query);
+    try {
+      $brugere = $this->organisationHelper->searchBruger($query);
+    } catch (ApiException $e) {
+      $brugere = NULL;
+    }
 
     if (NULL === $brugere) {
       $this->messenger()->addMessage($this->t('Could not fetch organisation data. Contact form owner.'));
     }
 
-    return array_map(static fn($value) => $value['id'], $brugere);
+    return array_map(static fn($value) => $value['id'], $brugere ?? []);
   }
 
   /**
@@ -751,34 +756,50 @@ class MineOrganisationsData extends WebformCompositeBase {
    * Set bruger information.
    */
   private function setBrugerInformation(string $brugerId): void {
-    $this->brugerInformation = $this->organisationHelper->getBrugerInformationer($brugerId);
+    try {
+      $this->brugerInformation = $this->organisationHelper->getBrugerInformationer($brugerId);
+    } catch (ApiException $e) {
+      $this->brugerInformation = NULL;
+    }
   }
 
   /**
    * Set manager information.
    */
   private function setManagerInformation(string $brugerId): void {
-    $this->managerInformation = $this->organisationHelper->getManagerInformation($brugerId);
+    try {
+      $this->managerInformation = $this->organisationHelper->getManagerInformation($brugerId);
+    } catch (ApiException $e) {
+      $this->managerInformation = NULL;
+    }
   }
 
   /**
    * Set funktion information.
    */
   private function setFunktionInformation(string $brugerId): void {
-    $this->funktionInformation = $this->organisationHelper->getFunktionInformationer($brugerId);
+    try {
+      $this->funktionInformation = $this->organisationHelper->getFunktionInformationer($brugerId);
+    } catch (ApiException $e) {
+      $this->funktionInformation = NULL;
+    }
   }
 
   /**
    * Set organisation path information.
    */
   private function setOrganisationPathInformation(): void {
-    $organisationPathData = [];
+    try {
+      $organisationPathData = [];
 
-    foreach (array_keys($this->funktionInformation) as $key) {
-      $organisationPathData[$key] = $this->organisationHelper->getOrganisationPath($key);
+      foreach (array_keys($this->funktionInformation) as $key) {
+        $organisationPathData[$key] = $this->organisationHelper->getOrganisationPath($key);
+      }
+
+      $this->organisationInformation = $organisationPathData;
+    } catch (ApiException $e) {
+      $this->organisationInformation = NULL;
     }
-
-    $this->organisationInformation = $organisationPathData;
   }
 
 }

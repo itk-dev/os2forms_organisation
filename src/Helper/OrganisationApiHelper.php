@@ -39,167 +39,140 @@ class OrganisationApiHelper {
    * Get bruger informationer for bruger.
    *
    * @phpstan-return array<string, mixed>
+   *
+   * @throws ApiException
    */
-  public function getBrugerInformationer(string $brugerId): ?array {
-    try {
-      $response = $this->get('bruger/' . $brugerId);
+  public function getBrugerInformationer(string $brugerId): array {
+    $response = $this->get('bruger/' . $brugerId);
 
-      if (Response::HTTP_OK != $response->getStatusCode()) {
+    if (Response::HTTP_OK != $response->getStatusCode()) {
         return [];
-      }
-
-      return $this->getResponseContentsAsArray($response);
-
     }
-    catch (ApiException $e) {
-      return NULL;
-    }
+
+    return $this->getResponseContentsAsArray($response);
   }
 
   /**
    * Get funktion informationer for bruger.
    *
    * @phpstan-return array<string, mixed>
+   *
+   * @throws ApiException
    */
-  public function getFunktionInformationer(string $brugerId): ?array {
-    try {
-      $response = $this->get('bruger/' . $brugerId . '/funktioner');
+  public function getFunktionInformationer(string $brugerId): array {
+    $response = $this->get('bruger/' . $brugerId . '/funktioner');
 
-      if (Response::HTTP_OK != $response->getStatusCode()) {
-        return [];
-      }
-
-      $funktioner = $this->getResponseContentsAsArray($response)['hydra:member'] ?? [];
-
-      $result = [];
-
-      foreach ($funktioner as $funktion) {
-        $result[$funktion['id']] = $funktion;
-      }
-
-      return $result;
-
+    if (Response::HTTP_OK != $response->getStatusCode()) {
+      return [];
     }
-    catch (ApiException $e) {
-      return NULL;
+
+    $funktioner = $this->getResponseContentsAsArray($response)['hydra:member'] ?? [];
+
+    $result = [];
+
+    foreach ($funktioner as $funktion) {
+      $result[$funktion['id']] = $funktion;
     }
+
+    return $result;
   }
 
   /**
    * Get organisation path for funktion.
    *
    * @phpstan-return array<string, mixed>
+   *
+   * @throws ApiException
    */
-  public function getOrganisationPath(string $funktionsId): ?array {
-    try {
-      $response = $this->get('funktion/' . $funktionsId . '/organisation-path');
+  public function getOrganisationPath(string $funktionsId): array {
+    $response = $this->get('funktion/' . $funktionsId . '/organisation-path');
 
-      if (Response::HTTP_OK != $response->getStatusCode()) {
-        return [];
-      }
-
-      $responseArray = $this->getResponseContentsAsArray($response);
-
-      return $responseArray['hydra:member'] ?? [];
-
+    if (Response::HTTP_OK != $response->getStatusCode()) {
+      return [];
     }
-    catch (ApiException $e) {
-      return NULL;
-    }
+
+    $responseArray = $this->getResponseContentsAsArray($response);
+
+    return $responseArray['hydra:member'] ?? [];
   }
 
   /**
    * Get manager information for bruger.
    *
    * @phpstan-return array<string, mixed>
+   *
+   * @throws ApiException
    */
-  public function getManagerInformation(string $brugerId): ?array {
-    try {
-      $response = $this->get('bruger/' . $brugerId . '/leder');
+  public function getManagerInformation(string $brugerId): array {
+    $response = $this->get('bruger/' . $brugerId . '/leder');
 
-      if (Response::HTTP_OK != $response->getStatusCode()) {
-        return [];
-      }
-
-      $managerIds = $this->getResponseContentsAsArray($response)['hydra:member'] ?? [];
-
-      // Select first manager if more than one.
-      if (count($managerIds) >= 1) {
-        $managerId = reset($managerIds);
-      }
-      else {
-        return [];
-      }
-
-      return $this->getBrugerInformationer($managerId);
-
+    if (Response::HTTP_OK != $response->getStatusCode()) {
+      return [];
     }
-    catch (ApiException $e) {
-      return NULL;
+
+    $managerIds = $this->getResponseContentsAsArray($response)['hydra:member'] ?? [];
+
+    // Select first manager if more than one.
+    if (count($managerIds) >= 1) {
+      $managerId = reset($managerIds);
     }
+    else {
+      return [];
+    }
+
+    return $this->getBrugerInformationer($managerId);
   }
 
   /**
    * Get (first) manager id for bruger.
+   *
+   * @throws ApiException
    */
-  public function getManagerId(string $brugerId): ?string {
-    try {
-      $response = $this->get('bruger/' . $brugerId . '/leder');
+  public function getManagerId(string $brugerId): string {
+    $response = $this->get('bruger/' . $brugerId . '/leder');
 
-      if (Response::HTTP_OK != $response->getStatusCode()) {
-        return '';
-      }
-
-      $managerIds = $this->getResponseContentsAsArray($response)['hydra:member'] ?? [];
-
-      // Select first manager if more than one.
-      if (count($managerIds) >= 1) {
-        return reset($managerIds);
-      }
-
+    if (Response::HTTP_OK != $response->getStatusCode()) {
       return '';
+    }
 
+    $managerIds = $this->getResponseContentsAsArray($response)['hydra:member'] ?? [];
+
+    // Select first manager if more than one.
+    if (count($managerIds) >= 1) {
+      return reset($managerIds);
     }
-    catch (ApiException $e) {
-      return NULL;
-    }
+
+    return '';
   }
 
   /**
    * Search for bruger.
    *
    * @phpstan-return array<string, mixed>
+   *
+   * @throws ApiException
    */
-  public function searchBruger(string $query, bool $forwardException = FALSE): ?array {
-    try {
-      $response = $this->get('bruger?page=1&navn=' . $query);
+  public function searchBruger(string $query): array {
+    $response = $this->get('bruger?page=1&navn=' . $query);
 
-      if (Response::HTTP_OK != $response->getStatusCode()) {
-        return [];
-      }
-
-      return $this->getResponseContentsAsArray($response)['hydra:member'] ?? [];
-
-    }
-    catch (ApiException $e) {
-      if ($forwardException) {
-        throw $e;
-      }
-
-      return NULL;
+    if (Response::HTTP_OK != $response->getStatusCode()) {
+      return [];
     }
 
+    return $this->getResponseContentsAsArray($response)['hydra:member'] ?? [];
   }
 
   /**
    * Do get request.
+   *
+   * @throws ApiException
    */
   private function get(string $path): ResponseInterface {
     try {
       return $this->httpClient->request('GET', $this->settings->getOrganisationApiEndpoint() . $path);
     }
     catch (GuzzleException $e) {
-      throw new ApiException($e->getMessage());
+      throw new ApiException($e->getMessage(), $e->getCode(), $e);
     }
   }
 
