@@ -3,7 +3,6 @@
 namespace Drupal\os2forms_organisation\Commands;
 
 use Drupal\Component\Utility\NestedArray;
-use Drupal\os2forms_organisation\Exception\ApiException;
 use Drupal\os2forms_organisation\Helper\OrganisationApiHelper;
 use Drush\Commands\DrushCommands;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
@@ -47,7 +46,8 @@ class Commands extends DrushCommands {
    *
    * @usage os2forms_organisation:lookup
    *
-   * @throws ApiException
+   * @throws \Drupal\os2forms_organisation\Exception\ApiException
+   *   API exception.
    */
   public function lookup(string $brugerId): void {
 
@@ -80,7 +80,8 @@ class Commands extends DrushCommands {
    *
    * @phpstan-param array<string, mixed> $options
    *
-   * @throws ApiException
+   * @throws \Drupal\os2forms_organisation\Exception\ApiException
+   *   API exception.
    */
   public function read(string $type, string $uuid, array $options = [
     'manager-levels' => 1,
@@ -104,7 +105,8 @@ class Commands extends DrushCommands {
    *
    * @phpstan-return array<string, mixed>
    *
-   * @throws ApiException
+   * @throws \Drupal\os2forms_organisation\Exception\ApiException
+   *   API exception.
    */
   private function readBruger(string $uuid, int $level = 0): array {
     $maxLevel = $this->readOptions['manager-levels'] ?? 1;
@@ -173,7 +175,8 @@ class Commands extends DrushCommands {
    *
    * @phpstan-param string $name
    *
-   * @throws ApiException
+   * @throws \Drupal\os2forms_organisation\Exception\ApiException
+   *   API exception.
    */
   public function search(string $name): void {
     $result = $this->helper->searchBruger($name);

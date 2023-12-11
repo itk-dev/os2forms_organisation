@@ -651,7 +651,8 @@ class MineOrganisationsData extends WebformCompositeBase {
 
     try {
       $brugere = $this->organisationHelper->searchBruger($query);
-    } catch (ApiException $e) {
+    }
+    catch (ApiException $e) {
       $brugere = NULL;
     }
 
@@ -758,7 +759,8 @@ class MineOrganisationsData extends WebformCompositeBase {
   private function setBrugerInformation(string $brugerId): void {
     try {
       $this->brugerInformation = $this->organisationHelper->getBrugerInformationer($brugerId);
-    } catch (ApiException $e) {
+    }
+    catch (ApiException $e) {
       $this->brugerInformation = NULL;
     }
   }
@@ -769,7 +771,8 @@ class MineOrganisationsData extends WebformCompositeBase {
   private function setManagerInformation(string $brugerId): void {
     try {
       $this->managerInformation = $this->organisationHelper->getManagerInformation($brugerId);
-    } catch (ApiException $e) {
+    }
+    catch (ApiException $e) {
       $this->managerInformation = NULL;
     }
   }
@@ -780,7 +783,8 @@ class MineOrganisationsData extends WebformCompositeBase {
   private function setFunktionInformation(string $brugerId): void {
     try {
       $this->funktionInformation = $this->organisationHelper->getFunktionInformationer($brugerId);
-    } catch (ApiException $e) {
+    }
+    catch (ApiException $e) {
       $this->funktionInformation = NULL;
     }
   }
@@ -797,7 +801,8 @@ class MineOrganisationsData extends WebformCompositeBase {
       }
 
       $this->organisationInformation = $organisationPathData;
-    } catch (ApiException $e) {
+    }
+    catch (ApiException $e) {
       $this->organisationInformation = NULL;
     }
   }

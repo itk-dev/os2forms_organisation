@@ -40,13 +40,14 @@ class OrganisationApiHelper {
    *
    * @phpstan-return array<string, mixed>
    *
-   * @throws ApiException
+   * @throws \Drupal\os2forms_organisation\Exception\ApiException
+   *   API exception.
    */
   public function getBrugerInformationer(string $brugerId): array {
     $response = $this->get('bruger/' . $brugerId);
 
     if (Response::HTTP_OK != $response->getStatusCode()) {
-        return [];
+      return [];
     }
 
     return $this->getResponseContentsAsArray($response);
@@ -57,7 +58,8 @@ class OrganisationApiHelper {
    *
    * @phpstan-return array<string, mixed>
    *
-   * @throws ApiException
+   * @throws \Drupal\os2forms_organisation\Exception\ApiException
+   *   API exception.
    */
   public function getFunktionInformationer(string $brugerId): array {
     $response = $this->get('bruger/' . $brugerId . '/funktioner');
@@ -82,7 +84,8 @@ class OrganisationApiHelper {
    *
    * @phpstan-return array<string, mixed>
    *
-   * @throws ApiException
+   * @throws \Drupal\os2forms_organisation\Exception\ApiException
+   *   API exception.
    */
   public function getOrganisationPath(string $funktionsId): array {
     $response = $this->get('funktion/' . $funktionsId . '/organisation-path');
@@ -101,7 +104,8 @@ class OrganisationApiHelper {
    *
    * @phpstan-return array<string, mixed>
    *
-   * @throws ApiException
+   * @throws \Drupal\os2forms_organisation\Exception\ApiException
+   *   API exception.
    */
   public function getManagerInformation(string $brugerId): array {
     $response = $this->get('bruger/' . $brugerId . '/leder');
@@ -126,7 +130,8 @@ class OrganisationApiHelper {
   /**
    * Get (first) manager id for bruger.
    *
-   * @throws ApiException
+   * @throws \Drupal\os2forms_organisation\Exception\ApiException
+   *   API exception.
    */
   public function getManagerId(string $brugerId): string {
     $response = $this->get('bruger/' . $brugerId . '/leder');
@@ -150,7 +155,8 @@ class OrganisationApiHelper {
    *
    * @phpstan-return array<string, mixed>
    *
-   * @throws ApiException
+   * @throws \Drupal\os2forms_organisation\Exception\ApiException
+   *   API exception.
    */
   public function searchBruger(string $query): array {
     $response = $this->get('bruger?page=1&navn=' . $query);
@@ -165,7 +171,8 @@ class OrganisationApiHelper {
   /**
    * Do get request.
    *
-   * @throws ApiException
+   * @throws \Drupal\os2forms_organisation\Exception\ApiException
+   *   API exception.
    */
   private function get(string $path): ResponseInterface {
     try {
