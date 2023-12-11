@@ -2,9 +2,9 @@
 
 namespace Drupal\os2forms_organisation\Commands;
 
-use Drupal\os2forms_organisation\Helper\OrganisationHelper;
+use Drupal\Component\Utility\NestedArray;
+use Drupal\os2forms_organisation\Helper\OrganisationApiHelper;
 use Drush\Commands\DrushCommands;
-use ItkDev\Serviceplatformen\Service\Exception\SoapException;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -16,9 +16,9 @@ class Commands extends DrushCommands {
   /**
    * The organisation helper.
    *
-   * @var \Drupal\os2forms_organisation\Helper\OrganisationHelper
+   * @var \Drupal\os2forms_organisation\Helper\OrganisationApiHelper
    */
-  private OrganisationHelper $helper;
+  private OrganisationApiHelper $helper;
 
   /**
    * The read options.
@@ -31,7 +31,7 @@ class Commands extends DrushCommands {
   /**
    * Constructor.
    */
-  public function __construct(OrganisationHelper $helper) {
+  public function __construct(OrganisationApiHelper $helper) {
     parent::__construct();
     $this->helper = $helper;
   }
@@ -47,7 +47,15 @@ class Commands extends DrushCommands {
    * @usage os2forms_organisation:lookup
    */
   public function lookup(string $brugerId): void {
-    $this->output()->writeln('Name: ' . $this->helper->getPersonName($brugerId));
+
+    $brugerInformation = $this->helper->getBrugerInformationer($brugerId);
+
+    if (isset($brugerInformation['navn'])) {
+      $this->output()->writeln('Name: ' . $brugerInformation['navn']);
+    }
+    else {
+      $this->output()->writeln(sprintf('Could not find user with id: %s', $brugerId));
+    }
   }
 
   /**
@@ -97,35 +105,48 @@ class Commands extends DrushCommands {
       return [];
     }
 
+    $brugerInformation = $this->helper->getBrugerInformationer($uuid);
+
     $data = [
-      'PersonName' => $this->helper->getPersonName($uuid),
-      'PersonAZIdent' => $this->helper->getPersonAZIdent($uuid),
-      'PersonEmail' => $this->helper->getPersonEmail($uuid),
-      'PersonPhone' => $this->helper->getPersonPhone($uuid),
-      'PersonLocation' => $this->helper->getPersonLocation($uuid),
+      'PersonName' => $brugerInformation['navn'] ?? '',
+      'PersonAZIdent' => $brugerInformation['az'] ?? '',
+      'PersonEmail' => $brugerInformation['email'] ?? '',
+      'PersonPhone' => $brugerInformation['telefon'] ?? '',
+      'PersonLocation' => $brugerInformation['lokation'] ?? '',
       'Id' => $uuid,
     ];
 
-    $funktioner = $this->helper->getOrganisationFunktioner($uuid);
-    foreach ($funktioner as $funktionsId) {
-      $data['OrganisationFunktioner'][$funktionsId] = [
-        'FunktionsNavn' => $this->helper->getFunktionsNavn($funktionsId),
-        'OrganisationEnhed' => $this->helper->getOrganisationEnhed($funktionsId),
-        'OrganisationAddress' => $this->helper->getOrganisationAddress($funktionsId),
-        'OrganisationEnhedNiveauTo' => $this->helper->getOrganisationEnhedNiveauTo($funktionsId),
-        'PersonMagistrat' => $this->helper->getPersonMagistrat($funktionsId),
-        'Id' => $funktionsId,
+    $funktioner = $this->helper->getFunktionInformationer($uuid);
+
+    foreach ($funktioner as $funktion) {
+
+      $organisationPath = $this->helper->getOrganisationPath($funktion['id']);
+
+      $organisationEnhedNiveauTo = &NestedArray::getValue(
+        $organisationPath,
+        [1, 'enhedsnavn']
+      );
+
+      $personMagistrat = &NestedArray::getValue(
+        $organisationPath,
+        [count($organisationPath) - 2, 'enhedsnavn']
+      );
+
+      $data['OrganisationFunktioner'][$funktion['id']] = [
+        'FunktionsNavn' => $funktion['funktionsnavn'] ?? '',
+        'OrganisationEnhed' => $funktion['enhedsnavn'] ?? '',
+        'OrganisationAddress' => $funktion['adresse'] ?? '',
+        'OrganisationEnhedNiveauTo' => $organisationEnhedNiveauTo ?? '',
+        'PersonMagistrat' => $personMagistrat ?? '',
+        'Id' => $funktion['id'] ?? '',
       ];
     }
 
-    $managers = $this->helper->getManagerInfo($uuid);
-    foreach ($managers as $manager) {
-      $managerId = $manager['brugerId'] ?? NULL;
-      if (NULL !== $managerId && $managerId !== $uuid) {
-        $manager = $this->readBruger($managerId, $level + 1);
-        if (!empty($manager)) {
-          $data['Manager'][] = $manager;
-        }
+    $manager = $this->helper->getManagerInformation($uuid);
+    if (isset($manager['id'])) {
+      $manager = $this->readBruger($manager['id'], $level + 1);
+      if (!empty($manager)) {
+        $data['Manager'][] = $manager;
       }
     }
 
@@ -135,62 +156,19 @@ class Commands extends DrushCommands {
   /**
    * Search organisation data.
    *
-   * @param string $query
-   *   The search query (JSON)
-   * @param array $options
-   *   The options.
+   * @param string $name
+   *   The name to search for.
    *
-   * @option type
-   *   The object type to search for (adresse, bruger, person).
-   *
-   * @command os2forms_organisation:search
+   * @command os2forms_organisation:search:bruger
    *
    * @usage os2forms_organisation:search --help
-   * @usage os2forms_organisation:search --type=adresse '{"adressetekst":"rimi@aarhus.dk"}'
-   * @usage os2forms_organisation:search --type=bruger '{"brugernavn": "user"}'
-   * @usage os2forms_organisation:search --type=person '{"navntekst": "Anders And"}'
-   * @usage os2forms_organisation:search '{"brugernavn": "user", "navntekst": "James *"}'
+   * @usage os2forms_organisation:search 'Anders And'
    *
-   * @phpstan-param array<string, mixed> $options
+   * @phpstan-param string $name
    */
-  public function search(string $query, array $options = [
-    'type' => NULL,
-  ]): void {
-    try {
-      $query = json_decode($query, TRUE, 512, JSON_THROW_ON_ERROR);
-    }
-    catch (\JsonException) {
-      throw new InvalidArgumentException(sprintf('Invalid JSON: %s', $query));
-    }
-    try {
-      $result = match ($options['type']) {
-        'adresse' => $this->helper->searchAdresse($query),
-        'bruger' => $this->helper->searchBruger($query),
-        'person' => $this->helper->searchPerson($query),
-        default => $this->helper->search($query)
-      };
-
-      $this->output()->writeln(Yaml::dump(json_decode(json_encode($result), TRUE), PHP_INT_MAX));
-    }
-    catch (\Throwable $throwable) {
-      if ($throwable instanceof SoapException) {
-        $this->output->writeln([
-          '',
-          'Request',
-          '',
-          $throwable->getRequest() ?? '',
-          '',
-        ]);
-        $this->output->writeln([
-          'Response',
-          '',
-          $throwable->getResponse() ?? '',
-          '',
-        ]);
-      }
-
-      throw $throwable;
-    }
+  public function search(string $name): void {
+    $result = $this->helper->searchBruger($name);
+    $this->output()->writeln(Yaml::dump(json_decode(json_encode($result), TRUE), PHP_INT_MAX));
   }
 
 }

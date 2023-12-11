@@ -34,55 +34,10 @@ final class Settings {
   }
 
   /**
-   * Get test mode.
+   * Get organisation API endpoint.
    */
-  public function getTestMode(): bool {
-    return (bool) $this->get(SettingsForm::TEST_MODE, TRUE);
-  }
-
-  /**
-   * Get authority cvr.
-   */
-  public function getAuthorityCvr(): string {
-    return $this->get(SettingsForm::AUTHORITY_CVR, '');
-  }
-
-  /**
-   * Get certificate.
-   *
-   * @phpstan-return array<string, mixed>
-   */
-  public function getCertificate(): array {
-    $value = $this->get(SettingsForm::CERTIFICATE);
-    return is_array($value) ? $value : [];
-  }
-
-  /**
-   * Get cache expiration.
-   */
-  public function getCacheExpiration(): string {
-    return $this->get(SettingsForm::CACHE_EXPIRATION, '');
-  }
-
-  /**
-   * Get organisation service endpoint.
-   */
-  public function getOrganisationServiceEndpoint(): string {
-    return $this->get(SettingsForm::ORGANISATION_SERVICE_ENDPOINT_REFERENCE, '');
-  }
-
-  /**
-   * Get organisation test manager role id.
-   */
-  public function getOrganisationTestManagerRoleId(): string {
-    return $this->get(SettingsForm::ORGANISATION_TEST_LEDER_ROLLE_UUID, '');
-  }
-
-  /**
-   * Get organisation production manager role id.
-   */
-  public function getOrganisationProductionManagerRoleId(): string {
-    return $this->get(SettingsForm::ORGANISATION_PROD_LEDER_ROLLE_UUID, '');
+  public function getOrganisationApiEndpoint(): string {
+    return $this->get(SettingsForm::ORGANISATION_BASE_API_ENDPOINT, '');
   }
 
   /**
@@ -127,13 +82,7 @@ final class Settings {
   private function getSettingsResolver(): OptionsResolver {
     return (new OptionsResolver())
       ->setDefaults([
-        SettingsForm::TEST_MODE => TRUE,
-        SettingsForm::AUTHORITY_CVR => '',
-        SettingsForm::CERTIFICATE => [],
-        SettingsForm::CACHE_EXPIRATION => '',
-        SettingsForm::ORGANISATION_SERVICE_ENDPOINT_REFERENCE => '',
-        SettingsForm::ORGANISATION_TEST_LEDER_ROLLE_UUID => '',
-        SettingsForm::ORGANISATION_PROD_LEDER_ROLLE_UUID => '',
+        SettingsForm::ORGANISATION_BASE_API_ENDPOINT => '',
       ]);
   }
 

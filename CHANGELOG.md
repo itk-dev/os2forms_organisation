@@ -9,6 +9,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0] 2013-12-11
+
+- Upgraded to use [OS2Forms Organisation API](https://github.com/itk-dev/os2forms_organisation_api).
+
 ## [1.3.3] 2023-10-18
 
 - Limited validation on `search_submit` and `search_user_apply` buttons.
@@ -68,7 +72,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Added OS2Forms organisation module
 - Added OS2Forms Organisation OpenID Connect module
 
-[Unreleased]: https://github.com/itk-dev/os2forms_organisation/compare/1.3.3...HEAD
+[Unreleased]: https://github.com/itk-dev/os2forms_organisation/compare/2.0.0...HEAD
+[2.0.0]: https://github.com/itk-dev/os2forms_organisation/compare/1.3.3...2.0.0
 [1.3.3]: https://github.com/itk-dev/os2forms_organisation/compare/1.3.2...1.3.3
 [1.3.2]: https://github.com/itk-dev/os2forms_organisation/compare/1.3.1...1.3.2
 [1.3.1]: https://github.com/itk-dev/os2forms_organisation/compare/1.3.0...1.3.1

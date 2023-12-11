@@ -40,7 +40,7 @@ class MineOrganisationsData extends WebformCompositeBase {
         '#title' => t('Query'),
         '#title_display' => 'hidden',
         '#attributes' => [
-          'placeholder' => t('Search for user name or az-ident'),
+          'placeholder' => t('Search for user name'),
         ],
       ],
 
@@ -59,7 +59,7 @@ class MineOrganisationsData extends WebformCompositeBase {
       ],
 
       // We cannot render a "container" element since it is (or may be)
-      // disabled. Therefore we render a start tag here and an end tag below in
+      // disabled. Therefore, we render a start tag here and an end tag below in
       // "search_result_wrapper_end".
       'search_result_wrapper_start' => [
         '#type' => 'markup',
