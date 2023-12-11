@@ -653,14 +653,12 @@ class MineOrganisationsData extends WebformCompositeBase {
       $brugere = $this->organisationHelper->searchBruger($query);
     }
     catch (ApiException $e) {
+      $this->logger->error(sprintf('Could not fetch organisation: %s', $e->getMessage()));
       $brugere = NULL;
-    }
-
-    if (NULL === $brugere) {
       $this->messenger()->addMessage($this->t('Could not fetch organisation data. Contact form owner.'));
     }
 
-    return array_map(static fn($value) => $value['id'], $brugere ?? []);
+    return array_column($brugere ?? [], 'id');
   }
 
   /**

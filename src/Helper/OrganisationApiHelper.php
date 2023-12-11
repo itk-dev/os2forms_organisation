@@ -6,7 +6,6 @@ use Drupal\os2forms_organisation\Exception\ApiException;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Organisation API helper class.
@@ -14,25 +13,9 @@ use Symfony\Component\HttpFoundation\Response;
 class OrganisationApiHelper {
 
   /**
-   * The HTTP client.
-   *
-   * @var \GuzzleHttp\ClientInterface
-   */
-  private ClientInterface $httpClient;
-
-  /**
-   * The Settings.
-   *
-   * @var \Drupal\os2forms_organisation\Helper\Settings
-   */
-  private Settings $settings;
-
-  /**
    * Constructor.
    */
-  public function __construct(Settings $settings, ClientInterface $httpClient) {
-    $this->settings = $settings;
-    $this->httpClient = $httpClient;
+  public function __construct(private readonly Settings $settings, private readonly ClientInterface $httpClient) {
   }
 
   /**
@@ -45,10 +28,6 @@ class OrganisationApiHelper {
    */
   public function getBrugerInformationer(string $brugerId): array {
     $response = $this->get('bruger/' . $brugerId);
-
-    if (Response::HTTP_OK != $response->getStatusCode()) {
-      return [];
-    }
 
     return $this->getResponseContentsAsArray($response);
   }
@@ -63,10 +42,6 @@ class OrganisationApiHelper {
    */
   public function getFunktionInformationer(string $brugerId): array {
     $response = $this->get('bruger/' . $brugerId . '/funktioner');
-
-    if (Response::HTTP_OK != $response->getStatusCode()) {
-      return [];
-    }
 
     $funktioner = $this->getResponseContentsAsArray($response)['hydra:member'] ?? [];
 
@@ -90,10 +65,6 @@ class OrganisationApiHelper {
   public function getOrganisationPath(string $funktionsId): array {
     $response = $this->get('funktion/' . $funktionsId . '/organisation-path');
 
-    if (Response::HTTP_OK != $response->getStatusCode()) {
-      return [];
-    }
-
     $responseArray = $this->getResponseContentsAsArray($response);
 
     return $responseArray['hydra:member'] ?? [];
@@ -109,10 +80,6 @@ class OrganisationApiHelper {
    */
   public function getManagerInformation(string $brugerId): array {
     $response = $this->get('bruger/' . $brugerId . '/leder');
-
-    if (Response::HTTP_OK != $response->getStatusCode()) {
-      return [];
-    }
 
     $managerIds = $this->getResponseContentsAsArray($response)['hydra:member'] ?? [];
 
@@ -136,10 +103,6 @@ class OrganisationApiHelper {
   public function getManagerId(string $brugerId): string {
     $response = $this->get('bruger/' . $brugerId . '/leder');
 
-    if (Response::HTTP_OK != $response->getStatusCode()) {
-      return '';
-    }
-
     $managerIds = $this->getResponseContentsAsArray($response)['hydra:member'] ?? [];
 
     // Select first manager if more than one.
@@ -159,11 +122,12 @@ class OrganisationApiHelper {
    *   API exception.
    */
   public function searchBruger(string $query): array {
-    $response = $this->get('bruger?page=1&navn=' . $query);
-
-    if (Response::HTTP_OK != $response->getStatusCode()) {
-      return [];
-    }
+    $response = $this->get('bruger', [
+      'query' => [
+        'page' => 1,
+        'navn' => $query,
+      ],
+    ]);
 
     return $this->getResponseContentsAsArray($response)['hydra:member'] ?? [];
   }
@@ -174,9 +138,9 @@ class OrganisationApiHelper {
    * @throws \Drupal\os2forms_organisation\Exception\ApiException
    *   API exception.
    */
-  private function get(string $path): ResponseInterface {
+  private function get(string $path, array $options = []): ResponseInterface {
     try {
-      return $this->httpClient->request('GET', $this->settings->getOrganisationApiEndpoint() . $path);
+      return $this->httpClient->request('GET', $this->settings->getOrganisationApiEndpoint() . $path, $options);
     }
     catch (GuzzleException $e) {
       throw new ApiException($e->getMessage(), $e->getCode(), $e);

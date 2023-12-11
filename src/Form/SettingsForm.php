@@ -19,25 +19,9 @@ final class SettingsForm extends FormBase {
   public const ORGANISATION_API_ENDPOINT = 'organisation_api_endpoint';
 
   /**
-   * The settings.
-   *
-   * @var \Drupal\os2forms_organisation\Helper\Settings
-   */
-  private Settings $settings;
-
-  /**
-   * Organisation API helper.
-   *
-   * @var \Drupal\os2forms_organisation\Helper\OrganisationApiHelper
-   */
-  private OrganisationApiHelper $helper;
-
-  /**
    * Constructor.
    */
-  public function __construct(Settings $settings, OrganisationApiHelper $helper) {
-    $this->settings = $settings;
-    $this->helper = $helper;
+  public function __construct(private readonly Settings $settings, private readonly OrganisationApiHelper $helper) {
   }
 
   /**

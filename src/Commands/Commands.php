@@ -170,8 +170,8 @@ class Commands extends DrushCommands {
    *
    * @command os2forms_organisation:search:bruger
    *
-   * @usage os2forms_organisation:search --help
-   * @usage os2forms_organisation:search 'Anders And'
+   * @usage os2forms_organisation:search:bruger --help
+   * @usage os2forms_organisation:search:bruger 'Anders And'
    *
    * @phpstan-param string $name
    *

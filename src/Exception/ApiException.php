@@ -3,7 +3,7 @@
 namespace Drupal\os2forms_organisation\Exception;
 
 /**
- * Invalid argument exception.
+ * API exception.
  */
 class ApiException extends Exception {
 
