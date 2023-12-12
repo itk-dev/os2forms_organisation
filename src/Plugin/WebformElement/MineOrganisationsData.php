@@ -479,28 +479,28 @@ class MineOrganisationsData extends WebformCompositeBase {
       $organisationInformation = $this->organisationInformation ?? [];
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_funktionsnavn][#access]')) {
-        $values['organisation_funktionsnavn'] = &NestedArray::getValue(
+        $values['organisation_funktionsnavn'] = NestedArray::getValue(
           $funktionInformation,
           [$funktionsId, 'funktionsnavn']
         );
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_enhed][#access]')) {
-        $values['organisation_enhed'] = &NestedArray::getValue(
+        $values['organisation_enhed'] = NestedArray::getValue(
           $funktionInformation,
           [$funktionsId, 'enhedsnavn']
         );
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_adresse][#access]')) {
-        $values['organisation_adresse'] = &NestedArray::getValue(
+        $values['organisation_adresse'] = NestedArray::getValue(
           $funktionInformation,
           [$funktionsId, 'adresse']
         );
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_niveau_2][#access]')) {
-        $values['organisation_niveau_2'] = &NestedArray::getValue(
+        $values['organisation_niveau_2'] = NestedArray::getValue(
           $organisationInformation,
           [$funktionsId, 1, 'enhedsnavn']
         );
@@ -509,16 +509,14 @@ class MineOrganisationsData extends WebformCompositeBase {
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[magistrat][#access]')) {
         $organisationArray = $organisationInformation[$funktionsId];
 
-        if (!is_countable($organisationArray)) {
-          $values['magistrat'] = '';
-        }
-        else {
-          // Notice the -2, since the last entry will be 'Kommune'.
-          $values['magistrat'] = &NestedArray::getValue(
+        $values['magistrat'] = is_countable($organisationArray)
+          ? NestedArray::getValue(
             $organisationArray,
             [count($organisationArray) - 2, 'enhedsnavn']
-          );
-        }
+          )
+          : ''
+        ;
+
       }
     }
 
