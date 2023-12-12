@@ -9,6 +9,9 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Upgraded to use [Organisation API](https://github.com/itk-dev/os2forms_organisation_api).
+- Limited search option to `navn`.
+
 ## [1.3.3] 2023-10-18
 
 - Limited validation on `search_submit` and `search_user_apply` buttons.

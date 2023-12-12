@@ -1,6 +1,6 @@
 services:
   Drupal\os2forms_organisation\Commands\Commands:
     arguments:
-      - '@Drupal\os2forms_organisation\Helper\OrganisationHelper'
+      - '@Drupal\os2forms_organisation\Helper\OrganisationApiHelper'
     tags:
       - { name: drush.command }
