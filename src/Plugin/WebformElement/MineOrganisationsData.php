@@ -304,7 +304,7 @@ class MineOrganisationsData extends WebformCompositeBase {
         // Hide search block.
         $compositeElement['#search__access'] = FALSE;
 
-        // Setup non-search information
+        // Setup non-search information.
         $brugerId = $this->getRelevantOrganisationUserId($dataType);
 
         if ($brugerId) {
@@ -514,8 +514,7 @@ class MineOrganisationsData extends WebformCompositeBase {
             $organisationArray,
             [count($organisationArray) - 2, 'enhedsnavn']
           )
-          : ''
-        ;
+          : '';
 
       }
     }
