@@ -563,7 +563,12 @@ class MineOrganisationsData extends WebformCompositeBase {
         return $userId;
 
       case self::DATA_DISPLAY_OPTION_MANAGER:
-        return $this->organisationHelper->getManagerId($userId);
+        try {
+          return $this->organisationHelper->getManagerId($userId);
+        }
+        catch (ApiException $e) {
+          return NULL;
+        }
 
       case self::DATA_DISPLAY_OPTION_SEARCH:
         return $this->formState->get(self::FORM_STATE_USER_ID);
