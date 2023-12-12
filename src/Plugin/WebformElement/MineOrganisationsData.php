@@ -274,15 +274,6 @@ class MineOrganisationsData extends WebformCompositeBase {
 
       $dataType = $element['#data_type'];
 
-      $brugerId = $this->getRelevantOrganisationUserId($dataType);
-
-      if (self::DATA_DISPLAY_OPTION_CURRENT_USER === $dataType) {
-        $this->setBrugerInformation($brugerId);
-      }
-      elseif (self::DATA_DISPLAY_OPTION_MANAGER === $dataType) {
-        $this->setManagerInformation($brugerId);
-      }
-
       $form['#attached']['library'][] = 'os2forms_organisation/os2forms_organisation';
 
       // Hide search result. Will be unhidden if a search is actually performed.
@@ -312,6 +303,18 @@ class MineOrganisationsData extends WebformCompositeBase {
       else {
         // Hide search block.
         $compositeElement['#search__access'] = FALSE;
+
+        // Setup non-search information
+        $brugerId = $this->getRelevantOrganisationUserId($dataType);
+
+        if ($brugerId) {
+          if (self::DATA_DISPLAY_OPTION_CURRENT_USER === $dataType) {
+            $this->setBrugerInformation($brugerId);
+          }
+          elseif (self::DATA_DISPLAY_OPTION_MANAGER === $dataType) {
+            $this->setManagerInformation($brugerId);
+          }
+        }
       }
 
       $this->updateBasicSubElements($compositeElement, $dataType);
@@ -497,19 +500,27 @@ class MineOrganisationsData extends WebformCompositeBase {
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_niveau_2][#access]')) {
+        $organisationArray = $organisationInformation[$funktionsId];
+
         $values['organisation_niveau_2'] = &NestedArray::getValue(
-          $organisationInformation,
+          $organisationArray,
           [$funktionsId, 1, 'enhedsnavn']
         );
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[magistrat][#access]')) {
         $organisationArray = $organisationInformation[$funktionsId];
-        // Notice the -2 rather than -1, since the last entry will be 'Kommune'.
-        $values['magistrat'] = &NestedArray::getValue(
-          $organisationArray,
-          [count($organisationArray) - 2, 'enhedsnavn']
-        );
+
+        if (!is_countable($organisationArray)) {
+          $values['magistrat'] = '';
+        }
+        else {
+          // Notice the -2, since the last entry will be 'Kommune'.
+          $values['magistrat'] = &NestedArray::getValue(
+            $organisationArray,
+            [count($organisationArray) - 2, 'enhedsnavn']
+          );
+        }
       }
     }
 
