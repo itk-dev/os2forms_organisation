@@ -500,10 +500,8 @@ class MineOrganisationsData extends WebformCompositeBase {
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_niveau_2][#access]')) {
-        $organisationArray = $organisationInformation[$funktionsId];
-
         $values['organisation_niveau_2'] = &NestedArray::getValue(
-          $organisationArray,
+          $organisationInformation,
           [$funktionsId, 1, 'enhedsnavn']
         );
       }
