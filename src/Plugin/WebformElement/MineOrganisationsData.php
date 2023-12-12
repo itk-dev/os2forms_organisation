@@ -509,6 +509,7 @@ class MineOrganisationsData extends WebformCompositeBase {
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[magistrat][#access]')) {
         $organisationArray = $organisationInformation[$funktionsId];
 
+        // Notice the -2 rather than -1, since the last entry will be 'Kommune'.
         $values['magistrat'] = is_countable($organisationArray)
           ? NestedArray::getValue(
             $organisationArray,
