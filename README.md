@@ -7,7 +7,7 @@ composer require os2forms/os2forms_organisation
 drush pm:enable os2forms_organisation
 ```
 
-Edit settings on `/admin/os2forms_organisation/settings`.
+Configure organisation API endpoint on `/admin/os2forms_organisation/settings`.
 
 **NOTE** This module creates and uses a user field called `field_organisation_user_id`.
 It is up to the using party to ensure this field is set to the

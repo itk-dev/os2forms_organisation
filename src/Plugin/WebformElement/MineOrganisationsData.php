@@ -274,15 +274,6 @@ class MineOrganisationsData extends WebformCompositeBase {
 
       $dataType = $element['#data_type'];
 
-      $brugerId = $this->getRelevantOrganisationUserId($dataType);
-
-      if (self::DATA_DISPLAY_OPTION_CURRENT_USER === $dataType) {
-        $this->setBrugerInformation($brugerId);
-      }
-      elseif (self::DATA_DISPLAY_OPTION_MANAGER === $dataType) {
-        $this->setManagerInformation($brugerId);
-      }
-
       $form['#attached']['library'][] = 'os2forms_organisation/os2forms_organisation';
 
       // Hide search result. Will be unhidden if a search is actually performed.
@@ -312,6 +303,17 @@ class MineOrganisationsData extends WebformCompositeBase {
       else {
         // Hide search block.
         $compositeElement['#search__access'] = FALSE;
+
+        // Setup non-search information.
+        $brugerId = $this->getRelevantOrganisationUserId($dataType);
+        if ($brugerId) {
+          if (self::DATA_DISPLAY_OPTION_CURRENT_USER === $dataType) {
+            $this->setBrugerInformation($brugerId);
+          }
+          elseif (self::DATA_DISPLAY_OPTION_MANAGER === $dataType) {
+            $this->setManagerInformation($brugerId);
+          }
+        }
       }
 
       $this->updateBasicSubElements($compositeElement, $dataType);
@@ -359,7 +361,7 @@ class MineOrganisationsData extends WebformCompositeBase {
 
       // Preselect organisation funktion (ansættelse) if there's only one.
       if (count($funktionOptions) === 1) {
-        $compositeElement['#organisations_funktion__value'] = $key;
+        $compositeElement['#organisations_funktion__value'] = array_key_first($funktionOptions);
       }
     }
   }
@@ -476,40 +478,44 @@ class MineOrganisationsData extends WebformCompositeBase {
       $organisationInformation = $this->organisationInformation ?? [];
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_funktionsnavn][#access]')) {
-        $values['organisation_funktionsnavn'] = &NestedArray::getValue(
+        $values['organisation_funktionsnavn'] = NestedArray::getValue(
           $funktionInformation,
           [$funktionsId, 'funktionsnavn']
         );
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_enhed][#access]')) {
-        $values['organisation_enhed'] = &NestedArray::getValue(
+        $values['organisation_enhed'] = NestedArray::getValue(
           $funktionInformation,
           [$funktionsId, 'enhedsnavn']
         );
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_adresse][#access]')) {
-        $values['organisation_adresse'] = &NestedArray::getValue(
+        $values['organisation_adresse'] = NestedArray::getValue(
           $funktionInformation,
           [$funktionsId, 'adresse']
         );
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_niveau_2][#access]')) {
-        $values['organisation_niveau_2'] = &NestedArray::getValue(
+        $values['organisation_niveau_2'] = NestedArray::getValue(
           $organisationInformation,
           [$funktionsId, 1, 'enhedsnavn']
         );
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[magistrat][#access]')) {
-        $organisationArray = $organisationInformation[$funktionsId];
+        $organisationArray = $organisationInformation[$funktionsId] ?? NULL;
+
         // Notice the -2 rather than -1, since the last entry will be 'Kommune'.
-        $values['magistrat'] = &NestedArray::getValue(
-          $organisationArray,
-          [count($organisationArray) - 2, 'enhedsnavn']
-        );
+        $values['magistrat'] = is_countable($organisationArray)
+          ? NestedArray::getValue(
+            $organisationArray,
+            [count($organisationArray) - 2, 'enhedsnavn']
+          )
+          : '';
+
       }
     }
 
@@ -556,7 +562,12 @@ class MineOrganisationsData extends WebformCompositeBase {
         return $userId;
 
       case self::DATA_DISPLAY_OPTION_MANAGER:
-        return $this->organisationHelper->getManagerId($userId);
+        try {
+          return $this->organisationHelper->getManagerId($userId);
+        }
+        catch (ApiException $e) {
+          return NULL;
+        }
 
       case self::DATA_DISPLAY_OPTION_SEARCH:
         return $this->formState->get(self::FORM_STATE_USER_ID);
