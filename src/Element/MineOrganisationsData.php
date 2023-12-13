@@ -21,14 +21,13 @@ class MineOrganisationsData extends WebformCompositeBase {
     $elements = [];
 
     $elements['search'] = [
-      '#type' => 'fieldset',
-      '#title' => t('Search'),
+      '#type' => 'markup',
       '#attributes' => [
         'class' => ['os2forms-organisation-search'],
       ],
 
       // We cannot render a "container" element since it is (or may be)
-      // disabled. Therefore we render a start tag here and an end tag below in
+      // disabled. Therefore, we render a start tag here and an end tag below in
       // "search_query_wrapper_end".
       'search_query_wrapper_start' => [
         '#type' => 'markup',
@@ -59,7 +58,7 @@ class MineOrganisationsData extends WebformCompositeBase {
       ],
 
       // We cannot render a "container" element since it is (or may be)
-      // disabled. Therefore we render a start tag here and an end tag below in
+      // disabled. Therefore, we render a start tag here and an end tag below in
       // "search_result_wrapper_end".
       'search_result_wrapper_start' => [
         '#type' => 'markup',
