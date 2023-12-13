@@ -306,7 +306,6 @@ class MineOrganisationsData extends WebformCompositeBase {
 
         // Setup non-search information.
         $brugerId = $this->getRelevantOrganisationUserId($dataType);
-
         if ($brugerId) {
           if (self::DATA_DISPLAY_OPTION_CURRENT_USER === $dataType) {
             $this->setBrugerInformation($brugerId);
@@ -362,7 +361,7 @@ class MineOrganisationsData extends WebformCompositeBase {
 
       // Preselect organisation funktion (ansættelse) if there's only one.
       if (count($funktionOptions) === 1) {
-        $compositeElement['#organisations_funktion__value'] = $key;
+        $compositeElement['#organisations_funktion__value'] = array_key_first($funktionOptions);
       }
     }
   }
@@ -507,7 +506,7 @@ class MineOrganisationsData extends WebformCompositeBase {
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[magistrat][#access]')) {
-        $organisationArray = $organisationInformation[$funktionsId];
+        $organisationArray = $organisationInformation[$funktionsId] ?? NULL;
 
         // Notice the -2 rather than -1, since the last entry will be 'Kommune'.
         $values['magistrat'] = is_countable($organisationArray)
