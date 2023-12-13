@@ -376,11 +376,6 @@ class MineOrganisationsData extends WebformCompositeBase {
 
       // @see https://www.drupal.org/docs/8/modules/webform/webform-cookbook/how-to-alter-properties-of-a-composites-sub-elements
       $compositeElement['#organisations_funktion__options'] = $funktionOptions;
-
-      // Preselect organisation funktion (ansættelse) if there's only one.
-      if (count($funktionOptions) === 1) {
-        $compositeElement['#organisations_funktion__value'] = array_key_first($funktionOptions);
-      }
     }
   }
 
