@@ -11,6 +11,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Made all elements except selector readonly.
 - Renamed `organisation_funktionsnavn` to `stillingsbetegnelse`.
+- Upgraded to use [Organisation API](https://github.com/itk-dev/os2forms_organisation_api).
+- Limited search option to `navn`.
 
 ## [1.3.3] 2023-10-18
 

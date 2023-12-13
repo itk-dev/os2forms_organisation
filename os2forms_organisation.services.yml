@@ -3,11 +3,7 @@ services:
     arguments:
       - "@keyvalue"
 
-  Drupal\os2forms_organisation\Helper\CertificateLocatorHelper:
+  Drupal\os2forms_organisation\Helper\OrganisationApiHelper:
     arguments:
       - "@Drupal\\os2forms_organisation\\Helper\\Settings"
-
-  Drupal\os2forms_organisation\Helper\OrganisationHelper:
-    arguments:
-      - "@Drupal\\os2forms_organisation\\Helper\\CertificateLocatorHelper"
-      - "@Drupal\\os2forms_organisation\\Helper\\Settings"
+      - "@http_client"

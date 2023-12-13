@@ -4,20 +4,18 @@ namespace Drupal\os2forms_organisation\Plugin\WebformElement;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerTrait;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\os2forms_organisation\Event\OrganisationUserIdEvent;
+use Drupal\os2forms_organisation\Exception\ApiException;
 use Drupal\os2forms_organisation\Exception\InvalidSettingException;
-use Drupal\os2forms_organisation\Helper\OrganisationHelper;
+use Drupal\os2forms_organisation\Helper\OrganisationApiHelper;
 use Drupal\os2forms_organisation\Helper\Settings;
 use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\Plugin\WebformElement\WebformCompositeBase;
 use Drupal\webform\Utility\WebformArrayHelper;
 use Drupal\webform\WebformSubmissionInterface;
-use ItkDev\Serviceplatformen\Service\SF1500\AbstractService;
-use ItkDev\Serviceplatformen\Service\SF1500\BrugerService;
-use ItkDev\Serviceplatformen\Service\SF1500\Model\AbstractModel;
-use ItkDev\Serviceplatformen\Service\SF1500\PersonService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
@@ -37,14 +35,21 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  * )
  */
 class MineOrganisationsData extends WebformCompositeBase {
+  use MessengerTrait;
+
   const DATA_DISPLAY_OPTION_CURRENT_USER = 'current_user';
   const DATA_DISPLAY_OPTION_MANAGER = 'manager';
   const DATA_DISPLAY_OPTION_SEARCH = 'search';
 
-  private const ORGANISATION_DATA_KEYS = [
-    'stillingsbetegnelse',
+  private const FUNKTION_DATA_KEYS = [
+    'organisation_funktionsnavn',
     'organisation_enhed',
     'organisation_adresse',
+    'organisation_niveau_2',
+    'magistrat',
+  ];
+
+  private const ORGANISATION_PATH_KEYS = [
     'organisation_niveau_2',
     'magistrat',
   ];
@@ -66,9 +71,9 @@ class MineOrganisationsData extends WebformCompositeBase {
   /**
    * Organisation Helper.
    *
-   * @var \Drupal\os2forms_organisation\Helper\OrganisationHelper
+   * @var \Drupal\os2forms_organisation\Helper\OrganisationApiHelper
    */
-  protected OrganisationHelper $organisationHelper;
+  protected OrganisationApiHelper $organisationHelper;
 
   /**
    * Property accessor.
@@ -92,6 +97,42 @@ class MineOrganisationsData extends WebformCompositeBase {
   private EventDispatcherInterface $eventDispatcher;
 
   /**
+   * Bruger information.
+   *
+   * @var array|null
+   *
+   * @phpstan-var array<string, mixed>|null
+   */
+  private ?array $brugerInformation = NULL;
+
+  /**
+   * Funktion information.
+   *
+   * @var array|null
+   *
+   * @phpstan-var array<string, mixed>|null
+   */
+  private ?array $funktionInformation = NULL;
+
+  /**
+   * Manager information.
+   *
+   * @var array|null
+   *
+   * @phpstan-var array<string, mixed>|null
+   */
+  private ?array $managerInformation = NULL;
+
+  /**
+   * Organisation path information.
+   *
+   * @var array|null
+   *
+   * @phpstan-var array<string, mixed>|null
+   */
+  private ?array $organisationInformation = NULL;
+
+  /**
    * {@inheritdoc}
    *
    * @phpstan-param array<string, mixed> $configuration
@@ -100,7 +141,7 @@ class MineOrganisationsData extends WebformCompositeBase {
     $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
 
     $instance->settings = $container->get(Settings::class);
-    $instance->organisationHelper = $container->get(OrganisationHelper::class);
+    $instance->organisationHelper = $container->get(OrganisationApiHelper::class);
     $instance->propertyAccessor = PropertyAccess::createPropertyAccessor();
     $instance->routeMatch = $container->get('current_route_match');
     $instance->eventDispatcher = $container->get('event_dispatcher');
@@ -232,22 +273,24 @@ class MineOrganisationsData extends WebformCompositeBase {
 
     if ('mine_organisations_data_element' === $element['#type']) {
       // Notice that this takes the elements from the form.
-      $compositeElement = &NestedArray::getValue($form['elements'], $element['#webform_parents']);
+      $compositeElement = &NestedArray::getValue(
+        $form['elements'],
+        $element['#webform_parents']
+      );
 
       if (!isset($element['#data_type'])) {
         throw new InvalidSettingException(sprintf('Invalid element configuration. OrganisationData element: %s, should contain a data display option', $form['#webform_id']));
       }
 
+      $dataType = $element['#data_type'];
+
       $form['#attached']['library'][] = 'os2forms_organisation/os2forms_organisation';
-      // Show the organisations_funktion only if some organisation data is
-      // requested.
-      $compositeElement['#organisations_funktion__access'] = $this->funktionDataRequested($compositeElement);
 
       // Hide search result. Will be unhidden if a search is actually performed.
       $compositeElement['#search_result__access'] = FALSE;
-      $dataType = $element['#data_type'];
       if (self::DATA_DISPLAY_OPTION_SEARCH === $dataType) {
-        // Set names on buttons so we can find the right trigger element.
+        // Set names on buttons,
+        // such that we can find the right trigger element.
         $compositeElement['#search_submit__name'] = $this->getTriggerName('search_submit', $compositeElement);
         $compositeElement['#search_user_apply__name'] = $this->getTriggerName('search_user_apply', $compositeElement);
         if ($organisationElement = $this->isTriggered($compositeElement['#search_user_apply__name'])) {
@@ -258,6 +301,8 @@ class MineOrganisationsData extends WebformCompositeBase {
             $formState->set(self::FORM_STATE_USER_ID, $userId);
             // And display user data.
             $dataType = self::DATA_DISPLAY_OPTION_CURRENT_USER;
+            // Set bruger information.
+            $this->setBrugerInformation($userId);
           }
         }
         else {
@@ -268,6 +313,28 @@ class MineOrganisationsData extends WebformCompositeBase {
       else {
         // Hide search block.
         $compositeElement['#search__access'] = FALSE;
+
+        // Setup non-search information.
+        $brugerId = $this->getRelevantOrganisationUserId($dataType);
+        if ($brugerId) {
+          if (self::DATA_DISPLAY_OPTION_CURRENT_USER === $dataType) {
+            $this->setBrugerInformation($brugerId);
+          }
+          elseif (self::DATA_DISPLAY_OPTION_MANAGER === $dataType) {
+            $this->setManagerInformation($brugerId);
+          }
+        }
+      }
+
+      $this->updateBasicSubElements($compositeElement, $dataType);
+
+      // Show the organisations_funktion element and handle it
+      // only if some funktion data is requested.
+      $funktionDataRequested = $this->funktionDataRequested($compositeElement);
+      $compositeElement['#organisations_funktion__access'] = $funktionDataRequested;
+
+      if (!$funktionDataRequested) {
+        return;
       }
 
       $funktionOptions = $this->buildOrganisationFunktionOptions($dataType);
@@ -277,7 +344,10 @@ class MineOrganisationsData extends WebformCompositeBase {
         return;
       }
 
-      $this->updateBasicSubElements($compositeElement, $element['#data_type']);
+      // Setup organisation path information if requested.
+      if ($this->organisationPathDataRequested($compositeElement)) {
+        $this->setOrganisationPathInformation();
+      }
 
       // Preselect organisation funktion (ansættelse) if there's only one.
       if (count($funktionOptions) === 1) {
@@ -307,6 +377,10 @@ class MineOrganisationsData extends WebformCompositeBase {
       // @see https://www.drupal.org/docs/8/modules/webform/webform-cookbook/how-to-alter-properties-of-a-composites-sub-elements
       $compositeElement['#organisations_funktion__options'] = $funktionOptions;
 
+      // Preselect organisation funktion (ansættelse) if there's only one.
+      if (count($funktionOptions) === 1) {
+        $compositeElement['#organisations_funktion__value'] = array_key_first($funktionOptions);
+      }
     }
   }
 
@@ -317,29 +391,18 @@ class MineOrganisationsData extends WebformCompositeBase {
    */
   private function buildOrganisationFunktionOptions(string $dataType): array {
 
-    $brugerId = $this->getRelevantOrganisationUserId($dataType, FALSE);
+    $brugerId = $this->getRelevantOrganisationUserId($dataType);
 
     if (NULL === $brugerId) {
       return [];
     }
 
-    $ids = match ($dataType) {
-      self::DATA_DISPLAY_OPTION_MANAGER => (array) $this->getRelevantOrganisationUserId($dataType, TRUE),
-      self::DATA_DISPLAY_OPTION_CURRENT_USER => $this->organisationHelper->getOrganisationFunktioner($brugerId),
-      default => []
-    };
-
-    if (empty($ids)) {
-      return [];
-    }
+    $this->setFunktionInformation($brugerId);
 
     // Make them human-readable.
     $options = [];
-    foreach ($ids as $id) {
-      $organisationEnhed = $this->organisationHelper->getOrganisationEnhed($id);
-      $funktionsNavn = $this->organisationHelper->getFunktionsNavn($id);
-
-      $options[$id] = $organisationEnhed . ', ' . $funktionsNavn;
+    foreach ($this->funktionInformation ?? [] as $funktion) {
+      $options[$funktion['id']] = $funktion['enhedsnavn'] . ', ' . $funktion['funktionsnavn'];
     }
 
     return $options;
@@ -364,32 +427,45 @@ class MineOrganisationsData extends WebformCompositeBase {
   private function getBasicValues(array &$element, string $dataType, string $brugerId = NULL): array {
     $values = [];
 
-    if (NULL === $brugerId) {
-      $brugerId = $this->getRelevantOrganisationUserId($dataType, FALSE);
+    if ($brugerId) {
+      $this->setBrugerInformation($brugerId);
     }
 
-    if (NULL !== $brugerId) {
-      $compositeElements = $this->propertyAccessor->getValue($element, '[#webform_composite_elements]');
+    // Set data depending on data type.
+    $data = match ($dataType) {
+      self::DATA_DISPLAY_OPTION_CURRENT_USER, self::DATA_DISPLAY_OPTION_SEARCH => $this->brugerInformation,
+      self::DATA_DISPLAY_OPTION_MANAGER => $this->managerInformation,
+      default => throw new InvalidSettingException(sprintf('Invalid data display option provided: %s. Allowed types: %s', $dataType, implode(', ', [
+        self::DATA_DISPLAY_OPTION_CURRENT_USER,
+        self::DATA_DISPLAY_OPTION_MANAGER,
+        self::DATA_DISPLAY_OPTION_SEARCH,
+      ]))),
+    };
 
-      if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[name][#access]')) {
-        $values['name'] = $this->organisationHelper->getPersonName($brugerId);
-      }
+    if (NULL === $data) {
+      $this->messenger()->addMessage($this->t('Could not fetch organisation data. Contact form owner.'));
+    }
 
-      if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[email][#access]')) {
-        $values['email'] = $this->organisationHelper->getPersonEmail($brugerId);
-      }
+    $compositeElements = $this->propertyAccessor->getValue($element, '[#webform_composite_elements]');
 
-      if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[az][#access]')) {
-        $values['az'] = $this->organisationHelper->getPersonAZIdent($brugerId);
-      }
+    if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[name][#access]')) {
+      $values['name'] = $data['navn'] ?? '';
+    }
 
-      if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[phone][#access]')) {
-        $values['phone'] = $this->organisationHelper->getPersonPhone($brugerId);
-      }
+    if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[email][#access]')) {
+      $values['email'] = $data['email'] ?? '';
+    }
 
-      if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[location][#access]')) {
-        $values['location'] = $this->organisationHelper->getPersonLocation($brugerId);
-      }
+    if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[az][#access]')) {
+      $values['az'] = $data['az'] ?? '';
+    }
+
+    if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[phone][#access]')) {
+      $values['phone'] = $data['telefon'] ?? '';
+    }
+
+    if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[location][#access]')) {
+      $values['location'] = $data['lokation'] ?? '';
     }
 
     return $values;
@@ -415,24 +491,49 @@ class MineOrganisationsData extends WebformCompositeBase {
     $compositeElements = $this->propertyAccessor->getValue($element, '[#webform_composite_elements]');
 
     if (NULL !== $compositeElements) {
+
+      $funktionInformation = $this->funktionInformation ?? [];
+      $organisationInformation = $this->organisationInformation ?? [];
+
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[stillingsbetegnelse][#access]')) {
-        $values['stillingsbetegnelse'] = $this->organisationHelper->getFunktionsNavn($funktionsId);
+        $values['stillingsbetegnelse'] = NestedArray::getValue(
+          $funktionInformation,
+          [$funktionsId, 'funktionsnavn']
+        );
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_enhed][#access]')) {
-        $values['organisation_enhed'] = $this->organisationHelper->getOrganisationEnhed($funktionsId);
+        $values['organisation_enhed'] = NestedArray::getValue(
+          $funktionInformation,
+          [$funktionsId, 'enhedsnavn']
+        );
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_adresse][#access]')) {
-        $values['organisation_adresse'] = $this->organisationHelper->getOrganisationAddress($funktionsId);
+        $values['organisation_adresse'] = NestedArray::getValue(
+          $funktionInformation,
+          [$funktionsId, 'adresse']
+        );
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_niveau_2][#access]')) {
-        $values['organisation_niveau_2'] = $this->organisationHelper->getOrganisationEnhedNiveauTo($funktionsId);
+        $values['organisation_niveau_2'] = NestedArray::getValue(
+          $organisationInformation,
+          [$funktionsId, 1, 'enhedsnavn']
+        );
       }
 
       if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[magistrat][#access]')) {
-        $values['magistrat'] = $this->organisationHelper->getPersonMagistrat($funktionsId);
+        $organisationArray = $organisationInformation[$funktionsId] ?? NULL;
+
+        // Notice the -2 rather than -1, since the last entry will be 'Kommune'.
+        $values['magistrat'] = is_countable($organisationArray)
+          ? NestedArray::getValue(
+            $organisationArray,
+            [count($organisationArray) - 2, 'enhedsnavn']
+          )
+          : '';
+
       }
     }
 
@@ -470,7 +571,7 @@ class MineOrganisationsData extends WebformCompositeBase {
    *
    * @phpstan-return mixed
    */
-  private function getRelevantOrganisationUserId(string $dataType, bool $returnFunktionsId) {
+  private function getRelevantOrganisationUserId(string $dataType) {
     // If we have a value from form state, use it.
     if (NULL !== $this->formState && $this->formState->has(self::FORM_STATE_USER_ID)) {
       $userId = $this->formState->get(self::FORM_STATE_USER_ID);
@@ -492,16 +593,12 @@ class MineOrganisationsData extends WebformCompositeBase {
         return $userId;
 
       case self::DATA_DISPLAY_OPTION_MANAGER:
-        $managerInfo = $this->organisationHelper->getManagerInfo($userId);
-
-        if (empty($managerInfo)) {
-          return [];
+        try {
+          return $this->organisationHelper->getManagerId($userId);
         }
-
-        // @todo Handle multiple managers - for now just pick first one.
-        $managerInfo = reset($managerInfo);
-
-        return $managerInfo[$returnFunktionsId ? 'funktionsId' : 'brugerId'];
+        catch (ApiException $e) {
+          return NULL;
+        }
 
       case self::DATA_DISPLAY_OPTION_SEARCH:
         return $this->formState->get(self::FORM_STATE_USER_ID);
@@ -594,26 +691,16 @@ class MineOrganisationsData extends WebformCompositeBase {
    */
   private function getSearchUserIds(string $query): array {
 
-    // Remove extra whitespace.
-    $query = implode(' ', preg_split('/\s+/', $query));
-
-    // Append wildcard character '*' to query string,
-    // if a wildcard is not already present in query.
-    if (!str_contains($query, '*')) {
-      $query .= '*';
+    try {
+      $brugere = $this->organisationHelper->searchBruger($query);
+    }
+    catch (ApiException $e) {
+      $this->logger->error(sprintf('Could not fetch organisation: %s', $e->getMessage()));
+      $brugere = NULL;
+      $this->messenger()->addMessage($this->t('Could not fetch organisation data. Contact form owner.'));
     }
 
-    $models = [];
-    $models[] = $this->organisationHelper->search([
-      BrugerService::FILTER_BRUGERNAVN => $query,
-      PersonService::FILTER_NAVNTEKST => $query,
-      AbstractService::PARAMETER_LIMIT => 10,
-    ]);
-
-    return array_map(
-      static fn (AbstractModel $model) => $model->id,
-      array_merge(...$models)
-    );
+    return array_column($brugere ?? [], 'id');
   }
 
   /**
@@ -679,10 +766,85 @@ class MineOrganisationsData extends WebformCompositeBase {
     return !empty(
       // Filter out elements that have been disabled.
       array_filter(
-        self::ORGANISATION_DATA_KEYS,
+        self::FUNKTION_DATA_KEYS,
         static fn ($key) => FALSE !== ($element['#' . $key . '__access'] ?? TRUE)
       )
     );
+  }
+
+  /**
+   * Decide if any organisation path data is requested.
+   *
+   * @phpstan-param array<string, mixed> $element
+   *   The element.
+   *
+   * @return bool
+   *   Whether funktion data is requested.
+   *
+   * @phpstan-param array<string, mixed> $element
+   */
+  private function organisationPathDataRequested(array $element): bool {
+    return !empty(
+      // Filter out elements that have been disabled.
+    array_filter(
+      self::ORGANISATION_PATH_KEYS,
+      static fn ($key) => FALSE !== ($element['#' . $key . '__access'] ?? TRUE)
+    )
+    );
+  }
+
+  /**
+   * Set bruger information.
+   */
+  private function setBrugerInformation(string $brugerId): void {
+    try {
+      $this->brugerInformation = $this->organisationHelper->getBrugerInformationer($brugerId);
+    }
+    catch (ApiException $e) {
+      $this->brugerInformation = NULL;
+    }
+  }
+
+  /**
+   * Set manager information.
+   */
+  private function setManagerInformation(string $brugerId): void {
+    try {
+      $this->managerInformation = $this->organisationHelper->getManagerInformation($brugerId);
+    }
+    catch (ApiException $e) {
+      $this->managerInformation = NULL;
+    }
+  }
+
+  /**
+   * Set funktion information.
+   */
+  private function setFunktionInformation(string $brugerId): void {
+    try {
+      $this->funktionInformation = $this->organisationHelper->getFunktionInformationer($brugerId);
+    }
+    catch (ApiException $e) {
+      $this->funktionInformation = NULL;
+    }
+  }
+
+  /**
+   * Set organisation path information.
+   */
+  private function setOrganisationPathInformation(): void {
+    try {
+      $organisationPathData = [];
+
+      foreach (array_keys($this->funktionInformation) as $key) {
+        $organisationPathData[$key] = $this->organisationHelper->getOrganisationPath($key);
+      }
+
+      $this->organisationInformation = $organisationPathData;
+    }
+    catch (ApiException $e) {
+      $this->organisationInformation = NULL;
+    }
   }
 
 }

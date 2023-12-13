@@ -39,7 +39,7 @@ class MineOrganisationsData extends WebformCompositeBase {
         '#title' => t('Query'),
         '#title_display' => 'hidden',
         '#attributes' => [
-          'placeholder' => t('Search for user name or az-ident'),
+          'placeholder' => t('Search for user name'),
         ],
       ],
 
