@@ -549,7 +549,7 @@ class MineOrganisationsData extends WebformCompositeBase {
   }
 
   /**
-   * Updates basic sub elements.
+   * Updates funktion sub elements.
    *
    * @phpstan-param array<string, mixed> $element
    */
@@ -647,7 +647,7 @@ class MineOrganisationsData extends WebformCompositeBase {
             $value['name'] ?? '',
             $value['email'] ?? '',
             $value['az'] ?? '',
-            Markup::create(sprintf('<button type="button" data-result-user-id="%1$s" class="button btn">%2$s</button>', $userId, (string) $this->t('Select user'))),
+            Markup::create(sprintf('<button type="button" data-result-user-id="%1$s" class="button button--outline--primary">%2$s</button>', $userId, (string) $this->t('Autofill'))),
           ];
         };
         $compositeElement['#search_result__access'] = TRUE;

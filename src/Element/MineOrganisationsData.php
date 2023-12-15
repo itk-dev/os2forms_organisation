@@ -23,7 +23,7 @@ class MineOrganisationsData extends WebformCompositeBase {
     $elements['search'] = [
       '#type' => 'markup',
       '#attributes' => [
-        'class' => ['os2forms-organisation-search'],
+          'class' => ['os2forms-organisation-search'],
       ],
 
       // We cannot render a "container" element since it is (or may be)
@@ -48,6 +48,9 @@ class MineOrganisationsData extends WebformCompositeBase {
         '#value' => t('Search'),
         '#attributes' => [
           'data-name' => 'search-user-query',
+          'class' => [
+            'button--primary'
+          ],
         ],
       ],
 
