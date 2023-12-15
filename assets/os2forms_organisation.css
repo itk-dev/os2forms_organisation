@@ -2,31 +2,53 @@
   display: flex;
 }
 
-.os2forms-organisation-search-query > * {
-  margin: 0 !important;
+.mine-organisations-data-element--wrapper {
+  max-width: 600px;
 }
 
-.os2forms-organisation-search-query > *:first-child {
-  flex-grow: 1;
+.os2forms-organisation-search-query > .form-type-textfield {
+  flex-basis: 71.5%;
 }
 
-.os2forms-organisation-search-query > *:first-child input {
+.os2forms-organisation-search-query > .form-type-textfield > .form-element--type-text {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
   width: 100%;
+}
+
+.os2forms-organisation-search-query > .form-submit {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  flex-basis: 20%;
+}
+
+.os2forms-organisation-search-query > * {
+  margin: 0.25rem 0 !important;
 }
 
 .os2forms-organisation-search-result {
   display: none;
 }
+
 input[data-name='search-user-query'],
 table.os2forms-organisation-search-result-table > tbody > tr > td > button {
-  width: 125px;
   outline: none;
   box-shadow: none !important;
 }
+
 input[data-name='search-user-query'].submit-loading,
 table.os2forms-organisation-search-result-table > tbody > tr > td > button.submit-loading {
   cursor: wait;
 }
+
+.os2forms-organisation-search-result-table {
+  margin-top: 0;
+}
+
+.os2forms-organisation-search-result-table > tbody > tr {
+  border: 0.0625rem solid #d3d4d9;
+}
+
 /* Make table a little more compact.
 /*
 .os2forms-organisation-search-result-table td {

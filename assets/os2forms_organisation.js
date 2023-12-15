@@ -46,7 +46,10 @@ window.addEventListener("load", () => {
     });
   });
 
-  document.querySelector("input[data-name='search-user-query']").addEventListener("click", (e) => {
+  const searchQuery = document.querySelector("input[data-name='search-user-query']");
+
+  if (searchQuery) {
+    searchQuery.addEventListener("click", (e) => {
       const searchButton = e.target;
       if (searchButton.classList.contains("submit-loading")) {
         e.preventDefault();
@@ -55,6 +58,7 @@ window.addEventListener("load", () => {
       searchButton.classList.add("submit-loading");
       searchButton.value = Drupal.t("Fetching");
     });
+  }
 
   document.querySelectorAll("table.os2forms-organisation-search-result-table > tbody > tr > td > button").forEach((el) => {
     el.addEventListener("click", (e) => {

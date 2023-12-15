@@ -9,6 +9,12 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Preselected `funktion` if only one is present.
+- Added message to edit element explaining where data comes from.
+- Aligned search element with other elements.
+- Gave `search`-elements stylish overhaul
+- Made all elements except selector readonly.
+- Renamed `organisation_funktionsnavn` to `stillingsbetegnelse`.
 - Upgraded to use [Organisation API](https://github.com/itk-dev/os2forms_organisation_api).
 - Limited search option to `navn`.
 

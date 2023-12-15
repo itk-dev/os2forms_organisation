@@ -12,6 +12,7 @@ use Drupal\os2forms_organisation\Exception\ApiException;
 use Drupal\os2forms_organisation\Exception\InvalidSettingException;
 use Drupal\os2forms_organisation\Helper\OrganisationApiHelper;
 use Drupal\os2forms_organisation\Helper\Settings;
+use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\Plugin\WebformElement\WebformCompositeBase;
 use Drupal\webform\Utility\WebformArrayHelper;
 use Drupal\webform\WebformSubmissionInterface;
@@ -190,6 +191,15 @@ class MineOrganisationsData extends WebformCompositeBase {
       ],
     ]);
 
+    WebformArrayHelper::insertBefore($form['composite'], 'data_type', 'message_test', [
+      '#type' => 'webform_message',
+      '#message_message' => $this->t('Data is fetched from SF1500, Fælleskommunalt Organisationssystem.'),
+      '#message_type' => 'info',
+      '#message_close' => TRUE,
+      '#message_storage' => WebformMessage::STORAGE_SESSION,
+      '#access' => TRUE,
+    ]);
+
     // Hide the search block.
     $form['composite']['element']['search']['#access'] = FALSE;
 
@@ -216,7 +226,7 @@ class MineOrganisationsData extends WebformCompositeBase {
       'az',
       'phone',
       'location',
-      'organisation_funktionsnavn',
+      'stillingsbetegnelse',
       'organisation_enhed',
       'organisation_adresse',
       'organisation_niveau_2',
@@ -339,11 +349,19 @@ class MineOrganisationsData extends WebformCompositeBase {
         $this->setOrganisationPathInformation();
       }
 
+      // Preselect organisation funktion (ansættelse) if there's only one.
+      if (count($funktionOptions) === 1) {
+        $compositeElement['#organisations_funktion__access'] = FALSE;
+        $this->updateFunktionSubElements($compositeElement, array_key_first($funktionOptions));
+        return;
+      }
+
       // Get all funktion data and pass it on to a JavaScript handler.
       $data = [];
       foreach ($funktionOptions as $key => $value) {
         $data[$key] = $this->getFunktionValues($compositeElement, $key);
       }
+
       $emptyValue = '';
       $compositeElement['#organisations_funktion__empty_value'] = $emptyValue;
 
@@ -358,11 +376,6 @@ class MineOrganisationsData extends WebformCompositeBase {
 
       // @see https://www.drupal.org/docs/8/modules/webform/webform-cookbook/how-to-alter-properties-of-a-composites-sub-elements
       $compositeElement['#organisations_funktion__options'] = $funktionOptions;
-
-      // Preselect organisation funktion (ansættelse) if there's only one.
-      if (count($funktionOptions) === 1) {
-        $compositeElement['#organisations_funktion__value'] = array_key_first($funktionOptions);
-      }
     }
   }
 
@@ -477,8 +490,8 @@ class MineOrganisationsData extends WebformCompositeBase {
       $funktionInformation = $this->funktionInformation ?? [];
       $organisationInformation = $this->organisationInformation ?? [];
 
-      if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[organisation_funktionsnavn][#access]')) {
-        $values['organisation_funktionsnavn'] = NestedArray::getValue(
+      if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[stillingsbetegnelse][#access]')) {
+        $values['stillingsbetegnelse'] = NestedArray::getValue(
           $funktionInformation,
           [$funktionsId, 'funktionsnavn']
         );
@@ -529,6 +542,19 @@ class MineOrganisationsData extends WebformCompositeBase {
    */
   private function updateBasicSubElements(&$element, string $dataType): void {
     $values = $this->getBasicValues($element, $dataType);
+
+    foreach ($values as $key => $value) {
+      $element['#' . $key . '__value'] = $value;
+    }
+  }
+
+  /**
+   * Updates funktion sub elements.
+   *
+   * @phpstan-param array<string, mixed> $element
+   */
+  private function updateFunktionSubElements(&$element, string $funktionsId): void {
+    $values = $this->getFunktionValues($element, $funktionsId);
 
     foreach ($values as $key => $value) {
       $element['#' . $key . '__value'] = $value;
@@ -621,7 +647,7 @@ class MineOrganisationsData extends WebformCompositeBase {
             $value['name'] ?? '',
             $value['email'] ?? '',
             $value['az'] ?? '',
-            Markup::create(sprintf('<button type="button" data-result-user-id="%1$s" class="button btn">%2$s</button>', $userId, (string) $this->t('Select user'))),
+            Markup::create(sprintf('<button type="button" data-result-user-id="%1$s" class="button button--outline--primary">%2$s</button>', $userId, (string) $this->t('Autofill'))),
           ];
         };
         $compositeElement['#search_result__access'] = TRUE;

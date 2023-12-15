@@ -21,14 +21,13 @@ class MineOrganisationsData extends WebformCompositeBase {
     $elements = [];
 
     $elements['search'] = [
-      '#type' => 'fieldset',
-      '#title' => t('Search'),
+      '#type' => 'markup',
       '#attributes' => [
         'class' => ['os2forms-organisation-search'],
       ],
 
       // We cannot render a "container" element since it is (or may be)
-      // disabled. Therefore we render a start tag here and an end tag below in
+      // disabled. Therefore, we render a start tag here and an end tag below in
       // "search_query_wrapper_end".
       'search_query_wrapper_start' => [
         '#type' => 'markup',
@@ -49,6 +48,9 @@ class MineOrganisationsData extends WebformCompositeBase {
         '#value' => t('Search'),
         '#attributes' => [
           'data-name' => 'search-user-query',
+          'class' => [
+            'button--primary',
+          ],
         ],
       ],
 
@@ -119,26 +121,31 @@ class MineOrganisationsData extends WebformCompositeBase {
     $elements['name'] = [
       '#type' => 'textfield',
       '#title' => t('Name'),
+      '#readonly' => TRUE,
     ];
 
     $elements['email'] = [
       '#type' => 'textfield',
       '#title' => t('Email'),
+      '#readonly' => TRUE,
     ];
 
     $elements['az'] = [
       '#type' => 'textfield',
       '#title' => t('AZ-ident'),
+      '#readonly' => TRUE,
     ];
 
     $elements['phone'] = [
       '#type' => 'textfield',
       '#title' => t('Phone'),
+      '#readonly' => TRUE,
     ];
 
     $elements['location'] = [
       '#type' => 'textfield',
       '#title' => t('Location'),
+      '#readonly' => TRUE,
     ];
 
     $elements['organisations_funktion'] = [
@@ -147,29 +154,34 @@ class MineOrganisationsData extends WebformCompositeBase {
       '#options' => [],
     ];
 
-    $elements['organisation_funktionsnavn'] = [
+    $elements['stillingsbetegnelse'] = [
       '#type' => 'textfield',
-      '#title' => t('Organisation funktionsnavn'),
+      '#title' => t('Stillingsbetegnelse'),
+      '#readonly' => TRUE,
     ];
 
     $elements['organisation_enhed'] = [
       '#type' => 'textfield',
       '#title' => t('Organisation enhed'),
+      '#readonly' => TRUE,
     ];
 
     $elements['organisation_adresse'] = [
       '#type' => 'textfield',
       '#title' => t('Organisation enheds adresse'),
+      '#readonly' => TRUE,
     ];
 
     $elements['organisation_niveau_2'] = [
       '#type' => 'textfield',
       '#title' => t('Organisation enhed niveau to'),
+      '#readonly' => TRUE,
     ];
 
     $elements['magistrat'] = [
       '#type' => 'textfield',
       '#title' => t('Magistrat'),
+      '#readonly' => TRUE,
     ];
 
     return $elements;
