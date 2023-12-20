@@ -193,7 +193,7 @@ class MineOrganisationsData extends WebformCompositeBase {
 
     WebformArrayHelper::insertBefore($form['composite'], 'data_type', 'message_test', [
       '#type' => 'webform_message',
-      '#message_message' => $this->t('Data is fetched from SF1500, Fælleskommunalt Organisationssystem.'),
+      '#message_message' => $this->t('Data is fetched from SF1500, Fælleskommunalt Organisationssystem (FK org).'),
       '#message_type' => 'info',
       '#message_close' => TRUE,
       '#message_storage' => WebformMessage::STORAGE_SESSION,
@@ -237,7 +237,10 @@ class MineOrganisationsData extends WebformCompositeBase {
 
     foreach ($subElements as $subElement) {
       if (!empty($value[$subElement])) {
-        $lines[$subElement] = $value[$subElement];
+        $title = NestedArray::getValue($element, ['#webform_composite_elements', $subElement, '#title']);
+        if ( NULL !== $title ) {
+          $lines[$subElement] = $title . ': ' . $value[$subElement];
+        }
       }
     }
 
