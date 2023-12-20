@@ -9,6 +9,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Updated element formatting to display subelement title.
 - Preselected `funktion` if only one is present.
 - Added message to edit element explaining where data comes from.
 - Aligned search element with other elements.
