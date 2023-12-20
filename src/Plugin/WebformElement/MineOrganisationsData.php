@@ -242,9 +242,7 @@ class MineOrganisationsData extends WebformCompositeBase {
           $subElement,
           '#title',
         ]);
-        if (NULL !== $title) {
-          $lines[$subElement] = $title . ': ' . $value[$subElement];
-        }
+        $lines[$subElement] = NULL !== $title ? $title . ': ' . $value[$subElement] : $value[$subElement];
       }
     }
 
