@@ -237,8 +237,12 @@ class MineOrganisationsData extends WebformCompositeBase {
 
     foreach ($subElements as $subElement) {
       if (!empty($value[$subElement])) {
-        $title = NestedArray::getValue($element, ['#webform_composite_elements', $subElement, '#title']);
-        if ( NULL !== $title ) {
+        $title = NestedArray::getValue($element, [
+          '#webform_composite_elements',
+          $subElement,
+          '#title',
+        ]);
+        if (NULL !== $title) {
           $lines[$subElement] = $title . ': ' . $value[$subElement];
         }
       }
