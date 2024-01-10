@@ -397,7 +397,7 @@ class MineOrganisationsData extends WebformCompositeBase {
       return [];
     }
 
-    $this->setFunktionInformation($brugerId);
+    $this->setFunktionInformation($brugerId, $dataType);
 
     // Make them human-readable.
     $options = [];
@@ -820,9 +820,9 @@ class MineOrganisationsData extends WebformCompositeBase {
   /**
    * Set funktion information.
    */
-  private function setFunktionInformation(string $brugerId): void {
+  private function setFunktionInformation(string $brugerId, string $dataType): void {
     try {
-      $this->funktionInformation = $this->organisationHelper->getFunktionInformationer($brugerId);
+      $this->funktionInformation = $this->organisationHelper->getFunktionInformationer($brugerId, self::DATA_DISPLAY_OPTION_MANAGER === $dataType);
     }
     catch (ApiException $e) {
       $this->funktionInformation = NULL;
