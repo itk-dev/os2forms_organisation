@@ -41,7 +41,7 @@ class OrganisationApiHelper {
    *   API exception.
    */
   public function getFunktionInformationer(string $brugerId, bool $findManagerIds = FALSE): array {
-    $path = $findManagerIds ? 'bruger/' . $brugerId . '/leder-funktioner' : 'bruger/' . $brugerId . '/funktioner';
+    $path = 'bruger/' . $brugerId . ($findManagerIds ? '/leder-funktioner' : '/funktioner');
     $response = $this->get($path);
 
     $funktioner = $this->getResponseContentsAsArray($response)['hydra:member'] ?? [];
