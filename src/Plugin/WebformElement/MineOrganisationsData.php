@@ -397,7 +397,7 @@ class MineOrganisationsData extends WebformCompositeBase {
       return [];
     }
 
-    $this->setFunktionInformation($brugerId);
+    $this->setFunktionInformation($brugerId, $dataType);
 
     // Make them human-readable.
     $options = [];
@@ -573,7 +573,7 @@ class MineOrganisationsData extends WebformCompositeBase {
    */
   private function getRelevantOrganisationUserId(string $dataType) {
     // If we have a value from form state, use it.
-    if (NULL !== $this->formState && $this->formState->has(self::FORM_STATE_USER_ID)) {
+    if (NULL !== $this->formState && $this->formState->has(self::FORM_STATE_USER_ID) && $dataType !== self::DATA_DISPLAY_OPTION_MANAGER) {
       $userId = $this->formState->get(self::FORM_STATE_USER_ID);
     }
 
@@ -820,9 +820,9 @@ class MineOrganisationsData extends WebformCompositeBase {
   /**
    * Set funktion information.
    */
-  private function setFunktionInformation(string $brugerId): void {
+  private function setFunktionInformation(string $brugerId, string $dataType): void {
     try {
-      $this->funktionInformation = $this->organisationHelper->getFunktionInformationer($brugerId);
+      $this->funktionInformation = $this->organisationHelper->getFunktionInformationer($brugerId, self::DATA_DISPLAY_OPTION_MANAGER === $dataType);
     }
     catch (ApiException $e) {
       $this->funktionInformation = NULL;

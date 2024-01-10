@@ -18,6 +18,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Renamed `organisation_funktionsnavn` to `stillingsbetegnelse`.
 - Upgraded to use [Organisation API](https://github.com/itk-dev/os2forms_organisation_api).
 - Limited search option to `navn`.
+- Fetched only manager employments when using `manager of user` data fetching method.
+- Fixed issue with manager data being overwritten while also having a search element.
 
 ## [1.3.3] 2023-10-18
 

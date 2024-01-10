@@ -40,8 +40,9 @@ class OrganisationApiHelper {
    * @throws \Drupal\os2forms_organisation\Exception\ApiException
    *   API exception.
    */
-  public function getFunktionInformationer(string $brugerId): array {
-    $response = $this->get('bruger/' . $brugerId . '/funktioner');
+  public function getFunktionInformationer(string $brugerId, bool $findManagerIds = FALSE): array {
+    $path = 'bruger/' . $brugerId . ($findManagerIds ? '/leder-funktioner' : '/funktioner');
+    $response = $this->get($path);
 
     $funktioner = $this->getResponseContentsAsArray($response)['hydra:member'] ?? [];
 
