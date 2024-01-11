@@ -9,6 +9,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0] 2024-01-11
+
 - Updated element formatting to display subelement title.
 - Preselected `funktion` if only one is present.
 - Added message to edit element explaining where data comes from.
@@ -80,7 +82,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Added OS2Forms organisation module
 - Added OS2Forms Organisation OpenID Connect module
 
-[Unreleased]: https://github.com/itk-dev/os2forms_organisation/compare/1.3.3...HEAD
+[Unreleased]: https://github.com/itk-dev/os2forms_organisation/compare/2.0.0...HEAD
+[2.0.0]: https://github.com/itk-dev/os2forms_organisation/compare/1.3.3...2.0.0
 [1.3.3]: https://github.com/itk-dev/os2forms_organisation/compare/1.3.2...1.3.3
 [1.3.2]: https://github.com/itk-dev/os2forms_organisation/compare/1.3.1...1.3.2
 [1.3.1]: https://github.com/itk-dev/os2forms_organisation/compare/1.3.0...1.3.1
