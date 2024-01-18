@@ -42,7 +42,7 @@ class MineOrganisationsData extends WebformCompositeBase {
   const DATA_DISPLAY_OPTION_SEARCH = 'search';
 
   private const FUNKTION_DATA_KEYS = [
-    'organisation_funktionsnavn',
+    'stillingsbetegnelse',
     'organisation_enhed',
     'organisation_adresse',
     'organisation_niveau_2',
