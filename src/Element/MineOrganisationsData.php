@@ -152,6 +152,7 @@ class MineOrganisationsData extends WebformCompositeBase {
       '#type' => 'select',
       '#title' => t('Organisations funktion'),
       '#options' => [],
+      '#access' => FALSE,
     ];
 
     $elements['stillingsbetegnelse'] = [
