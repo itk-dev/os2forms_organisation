@@ -40,9 +40,10 @@ class MineOrganisationsData extends WebformCompositeBase {
   const DATA_DISPLAY_OPTION_CURRENT_USER = 'current_user';
   const DATA_DISPLAY_OPTION_MANAGER = 'manager';
   const DATA_DISPLAY_OPTION_SEARCH = 'search';
+  const DATA_DISPLAY_OPTION_INHERIT = 'inherit';
 
   private const FUNKTION_DATA_KEYS = [
-    'organisation_funktionsnavn',
+    'stillingsbetegnelse',
     'organisation_enhed',
     'organisation_adresse',
     'organisation_niveau_2',
@@ -133,6 +134,15 @@ class MineOrganisationsData extends WebformCompositeBase {
   private ?array $organisationInformation = NULL;
 
   /**
+   * Search bruger information.
+   *
+   * @var array|null
+   *
+   * @phpstan-var array<string, mixed>|null
+   */
+  private ?array $searchInformation = NULL;
+
+  /**
    * {@inheritdoc}
    *
    * @phpstan-param array<string, mixed> $configuration
@@ -188,6 +198,7 @@ class MineOrganisationsData extends WebformCompositeBase {
         self::DATA_DISPLAY_OPTION_CURRENT_USER => $this->t('Logged in user'),
         self::DATA_DISPLAY_OPTION_MANAGER => $this->t('Manager of logged in user'),
         self::DATA_DISPLAY_OPTION_SEARCH => $this->t('Search'),
+        self::DATA_DISPLAY_OPTION_INHERIT => $this->t('Inherit values'),
       ],
     ]);
 
@@ -293,7 +304,16 @@ class MineOrganisationsData extends WebformCompositeBase {
 
       // Hide search result. Will be unhidden if a search is actually performed.
       $compositeElement['#search_result__access'] = FALSE;
+      // Hide search block. Will be unhidden if needed.
+      $compositeElement['#search__access'] = FALSE;
+
+      if ($dataType === self::DATA_DISPLAY_OPTION_INHERIT) {
+        return;
+      }
+
       if (self::DATA_DISPLAY_OPTION_SEARCH === $dataType) {
+        // Show search block.
+        $compositeElement['#search__access'] = TRUE;
         // Set names on buttons,
         // such that we can find the right trigger element.
         $compositeElement['#search_submit__name'] = $this->getTriggerName('search_submit', $compositeElement);
@@ -304,10 +324,8 @@ class MineOrganisationsData extends WebformCompositeBase {
           if ($userId = $formState->getValue($parents)) {
             // Set our user id.
             $formState->set(self::FORM_STATE_USER_ID, $userId);
-            // And display user data.
-            $dataType = self::DATA_DISPLAY_OPTION_CURRENT_USER;
-            // Set bruger information.
-            $this->setBrugerInformation($userId);
+            // Set search bruger information.
+            $this->setSearchInformation($userId);
           }
         }
         else {
@@ -316,9 +334,6 @@ class MineOrganisationsData extends WebformCompositeBase {
         }
       }
       else {
-        // Hide search block.
-        $compositeElement['#search__access'] = FALSE;
-
         // Setup non-search information.
         $brugerId = $this->getRelevantOrganisationUserId($dataType);
         if ($brugerId) {
@@ -433,8 +448,9 @@ class MineOrganisationsData extends WebformCompositeBase {
 
     // Set data depending on data type.
     $data = match ($dataType) {
-      self::DATA_DISPLAY_OPTION_CURRENT_USER, self::DATA_DISPLAY_OPTION_SEARCH => $this->brugerInformation,
+      self::DATA_DISPLAY_OPTION_CURRENT_USER => $this->brugerInformation,
       self::DATA_DISPLAY_OPTION_MANAGER => $this->managerInformation,
+      self::DATA_DISPLAY_OPTION_SEARCH => $this->searchInformation,
       default => throw new InvalidSettingException(sprintf('Invalid data display option provided: %s. Allowed types: %s', $dataType, implode(', ', [
         self::DATA_DISPLAY_OPTION_CURRENT_USER,
         self::DATA_DISPLAY_OPTION_MANAGER,
@@ -572,8 +588,8 @@ class MineOrganisationsData extends WebformCompositeBase {
    * @phpstan-return mixed
    */
   private function getRelevantOrganisationUserId(string $dataType) {
-    // If we have a value from form state, use it.
-    if (NULL !== $this->formState && $this->formState->has(self::FORM_STATE_USER_ID) && $dataType !== self::DATA_DISPLAY_OPTION_MANAGER) {
+    // If we have a value from form state, i.e. search, use it.
+    if (NULL !== $this->formState && $this->formState->has(self::FORM_STATE_USER_ID) && $dataType === self::DATA_DISPLAY_OPTION_SEARCH) {
       $userId = $this->formState->get(self::FORM_STATE_USER_ID);
     }
 
@@ -844,6 +860,18 @@ class MineOrganisationsData extends WebformCompositeBase {
     }
     catch (ApiException $e) {
       $this->organisationInformation = NULL;
+    }
+  }
+
+  /**
+   * Set search bruger information.
+   */
+  private function setSearchInformation(string $brugerId): void {
+    try {
+      $this->searchInformation = $this->organisationHelper->getBrugerInformationer($brugerId);
+    }
+    catch (ApiException $e) {
+      $this->searchInformation = NULL;
     }
   }
 

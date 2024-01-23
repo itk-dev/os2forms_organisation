@@ -152,6 +152,10 @@ class MineOrganisationsData extends WebformCompositeBase {
       '#type' => 'select',
       '#title' => t('Organisations funktion'),
       '#options' => [],
+      // Set access to false as default.
+      // If funktions data is requested it is modified in
+      // Drupal\os2forms_organisation\Plugin\WebformElement\MineOrganisationsData::alterForm.
+      '#access' => FALSE,
     ];
 
     $elements['stillingsbetegnelse'] = [
