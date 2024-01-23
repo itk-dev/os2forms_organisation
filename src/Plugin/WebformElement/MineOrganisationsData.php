@@ -590,7 +590,6 @@ class MineOrganisationsData extends WebformCompositeBase {
       $event = new OrganisationUserIdEvent();
       $this->eventDispatcher->dispatch($event);
       $userId = $event->getUserId();
-      $userId = 'ffdb7559-2ad3-4662-9fd4-d69849939b66';
     }
 
     if (empty($userId)) {
