@@ -40,6 +40,7 @@ class MineOrganisationsData extends WebformCompositeBase {
   const DATA_DISPLAY_OPTION_CURRENT_USER = 'current_user';
   const DATA_DISPLAY_OPTION_MANAGER = 'manager';
   const DATA_DISPLAY_OPTION_SEARCH = 'search';
+  const DATA_DISPLAY_OPTION_INHERIT = 'inherit';
 
   private const FUNKTION_DATA_KEYS = [
     'stillingsbetegnelse',
@@ -197,6 +198,7 @@ class MineOrganisationsData extends WebformCompositeBase {
         self::DATA_DISPLAY_OPTION_CURRENT_USER => $this->t('Logged in user'),
         self::DATA_DISPLAY_OPTION_MANAGER => $this->t('Manager of logged in user'),
         self::DATA_DISPLAY_OPTION_SEARCH => $this->t('Search'),
+        self::DATA_DISPLAY_OPTION_INHERIT => $this->t('Inherit values'),
       ],
     ]);
 
@@ -302,7 +304,16 @@ class MineOrganisationsData extends WebformCompositeBase {
 
       // Hide search result. Will be unhidden if a search is actually performed.
       $compositeElement['#search_result__access'] = FALSE;
+      // Hide search block. Will be unhidden if needed.
+      $compositeElement['#search__access'] = FALSE;
+
+      if ($dataType === self::DATA_DISPLAY_OPTION_INHERIT) {
+        return;
+      }
+
       if (self::DATA_DISPLAY_OPTION_SEARCH === $dataType) {
+        // Show search block.
+        $compositeElement['#search__access'] = TRUE;
         // Set names on buttons,
         // such that we can find the right trigger element.
         $compositeElement['#search_submit__name'] = $this->getTriggerName('search_submit', $compositeElement);
@@ -323,9 +334,6 @@ class MineOrganisationsData extends WebformCompositeBase {
         }
       }
       else {
-        // Hide search block.
-        $compositeElement['#search__access'] = FALSE;
-
         // Setup non-search information.
         $brugerId = $this->getRelevantOrganisationUserId($dataType);
         if ($brugerId) {
