@@ -9,6 +9,11 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Hid funktion selector by default.
+- Updated element key.
+- Handled search separately.
+
+
 ## [2.0.0] 2024-01-11
 
 - Updated element formatting to display subelement title.
