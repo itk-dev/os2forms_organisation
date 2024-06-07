@@ -9,6 +9,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Removed search button value changes functionality.
+
 ## [2.0.1] 2024-01-23
 
 - Hid funktion selector by default.
