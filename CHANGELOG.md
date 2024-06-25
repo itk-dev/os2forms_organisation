@@ -9,6 +9,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.2] 2024-06-25
+
 - Removed search button value changes functionality.
 
 ## [2.0.1] 2024-01-23
@@ -91,7 +93,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Added OS2Forms organisation module
 - Added OS2Forms Organisation OpenID Connect module
 
-[Unreleased]: https://github.com/itk-dev/os2forms_organisation/compare/2.0.1...HEAD
+[Unreleased]: https://github.com/itk-dev/os2forms_organisation/compare/2.0.2...HEAD
+[2.0.2]: https://github.com/itk-dev/os2forms_organisation/compare/2.0.1...2.0.2
 [2.0.1]: https://github.com/itk-dev/os2forms_organisation/compare/2.0.0...2.0.1
 [2.0.0]: https://github.com/itk-dev/os2forms_organisation/compare/1.3.3...2.0.0
 [1.3.3]: https://github.com/itk-dev/os2forms_organisation/compare/1.3.2...1.3.3
