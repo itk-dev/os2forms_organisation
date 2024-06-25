@@ -56,7 +56,6 @@ window.addEventListener("load", () => {
         return false;
       }
       searchButton.classList.add("submit-loading");
-      searchButton.value = Drupal.t("Fetching");
     });
   }
 

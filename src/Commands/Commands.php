@@ -83,9 +83,13 @@ class Commands extends DrushCommands {
    * @throws \Drupal\os2forms_organisation\Exception\ApiException
    *   API exception.
    */
-  public function read(string $type, string $uuid, array $options = [
-    'manager-levels' => 1,
-  ]): void {
+  public function read(
+    string $type,
+    string $uuid,
+    array $options = [
+      'manager-levels' => 1,
+    ],
+  ): void {
     $this->readOptions = $options;
 
     switch ($type) {
