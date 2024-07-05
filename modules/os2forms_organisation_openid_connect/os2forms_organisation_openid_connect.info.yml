@@ -2,7 +2,7 @@ name: OS2Forms Organisation OpenID Connect
 type: module
 description: Module for OS2Forms Organisation OpenID Connect.
 package: OS2Forms
-core_version_requirement: ^9
+core_version_requirement: ^9 || ^10
 
 dependencies:
   - os2forms_organisation:os2forms_organisation
