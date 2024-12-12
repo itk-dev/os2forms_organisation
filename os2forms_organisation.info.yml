@@ -6,5 +6,7 @@ core_version_requirement: ^9 || ^10
 
 dependencies:
   - webform:webform
+  - os2web:os2web_audit
+  - os2web:os2web_nemlogin
 
 configure: os2forms_organisation.admin.settings

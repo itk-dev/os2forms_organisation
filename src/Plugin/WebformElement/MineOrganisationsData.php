@@ -2,6 +2,9 @@
 
 namespace Drupal\os2forms_organisation\Plugin\WebformElement;
 
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
+use Drupal\Component\Plugin\Exception\PluginException;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerTrait;
@@ -12,6 +15,8 @@ use Drupal\os2forms_organisation\Exception\ApiException;
 use Drupal\os2forms_organisation\Exception\InvalidSettingException;
 use Drupal\os2forms_organisation\Helper\OrganisationApiHelper;
 use Drupal\os2forms_organisation\Helper\Settings;
+use Drupal\os2web_audit\Service\Logger;
+use Drupal\os2web_nemlogin\Service\AuthProviderService;
 use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\Plugin\WebformElement\WebformCompositeBase;
 use Drupal\webform\Utility\WebformArrayHelper;
@@ -98,6 +103,20 @@ class MineOrganisationsData extends WebformCompositeBase {
   private EventDispatcherInterface $eventDispatcher;
 
   /**
+   * The OS2Web Nemlogin authorization provider service.
+   *
+   * @var \Drupal\os2web_nemlogin\Service\AuthProviderService
+   */
+  private AuthProviderService $authProvider;
+
+  /**
+   * Audit logger.
+   *
+   * @var \Drupal\os2web_audit\Service\Logger
+   */
+  private Logger $auditLogger;
+
+  /**
    * Bruger information.
    *
    * @var array|null
@@ -143,6 +162,15 @@ class MineOrganisationsData extends WebformCompositeBase {
   private ?array $searchInformation = NULL;
 
   /**
+   * Weborm id.
+   *
+   * @var string|null
+   *
+   * @phpstan-var string|null
+   */
+  private ?string $webformId = NULL;
+
+  /**
    * {@inheritdoc}
    *
    * @phpstan-param array<string, mixed> $configuration
@@ -155,6 +183,8 @@ class MineOrganisationsData extends WebformCompositeBase {
     $instance->propertyAccessor = PropertyAccess::createPropertyAccessor();
     $instance->routeMatch = $container->get('current_route_match');
     $instance->eventDispatcher = $container->get('event_dispatcher');
+    $instance->authProvider = $container->get('os2web_nemlogin.auth_provider');
+    $instance->auditLogger = $container->get('os2web_audit.logger');
 
     return $instance;
   }
@@ -272,6 +302,8 @@ class MineOrganisationsData extends WebformCompositeBase {
     if (!isset($form['#webform_id'])) {
       return;
     }
+
+    $this->webformId = $form['#webform_id'];
 
     // Only alter when displaying submission form.
     $accessCheckRouteNames = [
@@ -474,6 +506,7 @@ class MineOrganisationsData extends WebformCompositeBase {
 
     if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[az][#access]')) {
       $values['az'] = $data['az'] ?? '';
+
     }
 
     if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[phone][#access]')) {
@@ -483,6 +516,16 @@ class MineOrganisationsData extends WebformCompositeBase {
     if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[location][#access]')) {
       $values['location'] = $data['lokation'] ?? '';
     }
+
+    $this->auditLog(
+      implode(', ', array_map(
+        function ($key, $value) {
+          return $key . ':' . $value;
+        },
+        array_keys($values),
+        $values
+      ))
+    );
 
     return $values;
   }
@@ -583,6 +626,15 @@ class MineOrganisationsData extends WebformCompositeBase {
   }
 
   /**
+   * Get current user organisation bruger id.
+   */
+  private function getCurrentUserOrganisationUserId(): ?string {
+    $event = new OrganisationUserIdEvent();
+    $this->eventDispatcher->dispatch($event);
+    return $event->getUserId();
+  }
+
+  /**
    * Gets relevant organisation bruger or funktions id.
    *
    * @phpstan-return mixed
@@ -594,10 +646,7 @@ class MineOrganisationsData extends WebformCompositeBase {
     }
 
     if (empty($userId)) {
-      // Let other modules set organisation user id.
-      $event = new OrganisationUserIdEvent();
-      $this->eventDispatcher->dispatch($event);
-      $userId = $event->getUserId();
+      $userId = $this->getCurrentUserOrganisationUserId();
     }
 
     if (empty($userId)) {
@@ -875,4 +924,31 @@ class MineOrganisationsData extends WebformCompositeBase {
     }
   }
 
+
+  /**
+   * Audit logs viewed data.
+   */
+  private function auditLog(string $data): void {
+
+    if (!$this->webformId) {
+      $this->auditLogger->error('Failed audit logging due to missing webform id.');
+      return;
+    }
+
+    // Find configured session provider.
+    try {
+      $webform = $this->entityTypeManager->getStorage('webform')->load($this->webformId);
+      $webformNemIdSettings = $webform->getThirdPartySetting('os2forms', 'os2forms_nemid');
+      $sessionType = $webformNemIdSettings['session_type'] ?? NULL;
+      $plugin = $sessionType ? $this->authProvider->getPluginInstance($sessionType) : $this->authProvider->getActivePlugin();
+    } catch (InvalidPluginDefinitionException|PluginNotFoundException|PluginException $e) {
+      $this->logger->error(sprintf('Failed audit logging: %s', $e->getMessage()));
+      return;
+    }
+
+    $user = $plugin->fetchValue('email') ?? $this->getCurrentUserOrganisationUserId();
+
+    $msg = sprintf('User %s looked at: %s', $user, $data);
+    $this->auditLogger->info('OrganisationData', $msg);
+  }
 }
