@@ -471,7 +471,7 @@ class MineOrganisationsData extends WebformCompositeBase {
    * @phpstan-param array<string, mixed> $element
    * @phpstan-return array<string, mixed>
    */
-  private function getBasicValues(array &$element, string $dataType, string $brugerId = NULL): array {
+  private function getBasicValues(array &$element, string $dataType, ?string $brugerId = NULL): array {
     $values = [];
 
     if ($brugerId) {
@@ -924,7 +924,6 @@ class MineOrganisationsData extends WebformCompositeBase {
     }
   }
 
-
   /**
    * Audit logs viewed data.
    */
@@ -941,7 +940,8 @@ class MineOrganisationsData extends WebformCompositeBase {
       $webformNemIdSettings = $webform->getThirdPartySetting('os2forms', 'os2forms_nemid');
       $sessionType = $webformNemIdSettings['session_type'] ?? NULL;
       $plugin = $sessionType ? $this->authProvider->getPluginInstance($sessionType) : $this->authProvider->getActivePlugin();
-    } catch (InvalidPluginDefinitionException|PluginNotFoundException|PluginException $e) {
+    }
+    catch (InvalidPluginDefinitionException | PluginNotFoundException | PluginException $e) {
       $this->logger->error(sprintf('Failed audit logging: %s', $e->getMessage()));
       return;
     }
@@ -951,4 +951,5 @@ class MineOrganisationsData extends WebformCompositeBase {
     $msg = sprintf('User %s looked at: %s', $user, $data);
     $this->auditLogger->info('OrganisationData', $msg);
   }
+
 }
