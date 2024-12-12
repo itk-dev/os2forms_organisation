@@ -506,7 +506,6 @@ class MineOrganisationsData extends WebformCompositeBase {
 
     if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[az][#access]')) {
       $values['az'] = $data['az'] ?? '';
-
     }
 
     if (FALSE !== $this->propertyAccessor->getValue($compositeElements, '[phone][#access]')) {
@@ -629,6 +628,7 @@ class MineOrganisationsData extends WebformCompositeBase {
    * Get current user organisation bruger id.
    */
   private function getCurrentUserOrganisationUserId(): ?string {
+    // Let other modules set organisation user id.
     $event = new OrganisationUserIdEvent();
     $this->eventDispatcher->dispatch($event);
     return $event->getUserId();
@@ -930,7 +930,7 @@ class MineOrganisationsData extends WebformCompositeBase {
   private function auditLog(string $data): void {
 
     if (!$this->webformId) {
-      $this->auditLogger->error('Failed audit logging due to missing webform id.');
+      $this->logger->error('Failed audit logging due to missing webform id.');
       return;
     }
 
@@ -946,7 +946,7 @@ class MineOrganisationsData extends WebformCompositeBase {
       return;
     }
 
-    $user = $plugin->fetchValue('email') ?? $this->getCurrentUserOrganisationUserId();
+    $user = $plugin->fetchValue('email') ?: $this->getCurrentUserOrganisationUserId();
 
     $msg = sprintf('User %s looked at: %s', $user, $data);
     $this->auditLogger->info('OrganisationData', $msg);
