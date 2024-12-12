@@ -9,6 +9,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Added audit logging.
+
 ## [2.1.0] 2024-07-05
 
 - Drupal 10 compatibility.
