@@ -919,6 +919,8 @@ class MineOrganisationsData extends WebformCompositeBase {
 
   /**
    * Audit logs viewed data.
+   *
+   * @phpstan-param array<string, string> $data
    */
   private function auditLog(array $data): void {
     if (!$this->webformId) {
