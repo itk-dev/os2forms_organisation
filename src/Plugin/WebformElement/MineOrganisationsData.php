@@ -516,15 +516,7 @@ class MineOrganisationsData extends WebformCompositeBase {
       $values['location'] = $data['lokation'] ?? '';
     }
 
-    $this->auditLog(
-      implode(', ', array_map(
-        function ($key, $value) {
-          return $key . ':' . $value;
-        },
-        array_keys($values),
-        $values
-      ))
-    );
+    $this->auditLog($values);
 
     return $values;
   }
@@ -928,11 +920,27 @@ class MineOrganisationsData extends WebformCompositeBase {
   /**
    * Audit logs viewed data.
    */
-  private function auditLog(string $data): void {
+  private function auditLog(array $data): void {
     if (!$this->webformId) {
       $this->logger->error('Failed audit logging due to missing webform id.');
       return;
     }
+
+    // Check that there is actually data viewed.
+    $nonEmptyData = array_filter($data);
+
+    if (empty($nonEmptyData)) {
+      return;
+    }
+
+    // Computed logging string.
+    $loggingString = implode(', ', array_map(
+      function ($key, $value) {
+        return $key . ':' . $value;
+      },
+      array_keys($nonEmptyData),
+      $nonEmptyData
+    ));
 
     // Find configured session provider.
     try {
@@ -948,7 +956,7 @@ class MineOrganisationsData extends WebformCompositeBase {
 
     $user = $plugin->fetchValue('email') ?: $this->getCurrentUserOrganisationUserId();
 
-    $msg = sprintf('User %s looked at: %s', $user, $data);
+    $msg = sprintf('User %s looked at: %s', $user, $loggingString);
     $this->auditLogger->info('OrganisationData', $msg);
   }
 
