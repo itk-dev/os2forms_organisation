@@ -631,6 +631,7 @@ class MineOrganisationsData extends WebformCompositeBase {
     // Let other modules set organisation user id.
     $event = new OrganisationUserIdEvent();
     $this->eventDispatcher->dispatch($event);
+
     return $event->getUserId();
   }
 
@@ -928,7 +929,6 @@ class MineOrganisationsData extends WebformCompositeBase {
    * Audit logs viewed data.
    */
   private function auditLog(string $data): void {
-
     if (!$this->webformId) {
       $this->logger->error('Failed audit logging due to missing webform id.');
       return;
