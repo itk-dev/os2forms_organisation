@@ -712,7 +712,7 @@ class MineOrganisationsData extends WebformCompositeBase {
             $value['az'] ?? '',
             Markup::create(sprintf('<button type="button" data-result-user-id="%1$s" class="button button--outline--primary">%2$s</button>', $userId, (string) $this->t('Autofill'))),
           ];
-        };
+        }
         $compositeElement['#search_result__access'] = TRUE;
         $compositeElement['#search_result_table__rows'] = $rows
           ?: [[$this->t('No results found for query %query', ['%query' => $query])]];

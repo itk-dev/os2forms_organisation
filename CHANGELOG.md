@@ -9,6 +9,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Updated GitHub workflow images.
+
 ## [2.2.0] 2024-12-13
 
 - Added audit logging.
