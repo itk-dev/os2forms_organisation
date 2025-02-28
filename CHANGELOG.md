@@ -9,6 +9,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Updated `os2web_audit`.
 - Updated GitHub workflow images.
 
 ## [2.2.0] 2024-12-13
