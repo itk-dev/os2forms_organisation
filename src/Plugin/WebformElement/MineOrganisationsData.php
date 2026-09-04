@@ -393,6 +393,8 @@ class MineOrganisationsData extends WebformCompositeBase {
 
       if (empty($funktionOptions)) {
         // A user must have at least one funktion (ansættelse).
+        // Hide the selector as it has no options to offer.
+        $compositeElement['#organisations_funktion__access'] = FALSE;
         return;
       }
 
@@ -407,6 +409,10 @@ class MineOrganisationsData extends WebformCompositeBase {
         $this->updateFunktionSubElements($compositeElement, array_key_first($funktionOptions));
         return;
       }
+
+      // Require an active choice when there are multiple funktioner
+      // (ansættelser) to avoid submissions with empty funktion data.
+      $compositeElement['#organisations_funktion__required'] = TRUE;
 
       // Get all funktion data and pass it on to a JavaScript handler.
       $data = [];
