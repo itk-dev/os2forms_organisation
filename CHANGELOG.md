@@ -11,6 +11,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Required selecting a funktion (ansættelse) when a user has more than one.
 - Hid funktion selector when no funktion options are available.
+- Limited search button validation to search fields, allowing new searches
+  while a funktion selection is pending.
 
 ## [2.2.1] 2025-02-28
 
