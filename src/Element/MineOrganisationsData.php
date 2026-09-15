@@ -101,10 +101,18 @@ class MineOrganisationsData extends WebformCompositeBase {
     ];
 
     if (isset($element['#webform_key'])) {
+      // Limit validation to the search fields only. Including the whole
+      // composite would make a required organisations_funktion selector
+      // block searching for another user.
       $elements['search']['search_submit'] += [
         '#limit_validation_errors' => [
           [
             $element['#webform_key'],
+            'search_query',
+          ],
+          [
+            $element['#webform_key'],
+            'search_user_id',
           ],
         ],
       ];
@@ -113,6 +121,11 @@ class MineOrganisationsData extends WebformCompositeBase {
         '#limit_validation_errors' => [
           [
             $element['#webform_key'],
+            'search_query',
+          ],
+          [
+            $element['#webform_key'],
+            'search_user_id',
           ],
         ],
       ];
