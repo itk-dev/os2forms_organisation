@@ -9,6 +9,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.2.2] 2026-09-15
+
 - Required selecting a funktion (ansættelse) when a user has more than one.
 - Hid funktion selector when no funktion options are available.
 - Limited search button validation to search fields, allowing new searches
@@ -111,7 +113,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Added OS2Forms organisation module
 - Added OS2Forms Organisation OpenID Connect module
 
-[Unreleased]: https://github.com/itk-dev/os2forms_organisation/compare/2.2.1...HEAD
+[Unreleased]: https://github.com/itk-dev/os2forms_organisation/compare/2.2.2...HEAD
+[2.2.2]: https://github.com/itk-dev/os2forms_organisation/compare/2.2.1...2.2.2
 [2.2.1]: https://github.com/itk-dev/os2forms_organisation/compare/2.2.0...2.2.1
 [2.2.0]: https://github.com/itk-dev/os2forms_organisation/compare/2.1.0...2.2.0
 [2.1.0]: https://github.com/itk-dev/os2forms_organisation/compare/2.0.2...2.1.0
