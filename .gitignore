@@ -1,4 +1,12 @@
-vendor
+/vendor/
 composer.lock
 node_modules
 yarn.lock
+*.cache
+/.editorconfig
+/.gitattributes
+.idea
+
+# DDEV stuff
+/web/
+/recipes/

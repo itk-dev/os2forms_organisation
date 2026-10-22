@@ -9,6 +9,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Drupal 11 compatibility.
+
 ## [2.2.2] 2026-09-15
 
 - Required selecting a funktion (ansættelse) when a user has more than one.

@@ -17,7 +17,7 @@ final class Settings {
    *
    * @var \Drupal\Core\KeyValueStore\KeyValueStoreInterface
    */
-  private KeyValueStoreInterface $store;
+  private readonly KeyValueStoreInterface $store;
 
   /**
    * The key value collection name.

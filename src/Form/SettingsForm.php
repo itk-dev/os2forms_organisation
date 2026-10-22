@@ -21,7 +21,7 @@ final class SettingsForm extends FormBase {
   /**
    * Constructor.
    */
-  public function __construct(private readonly Settings $settings, private readonly OrganisationApiHelper $helper) {
+  public function __construct(protected Settings $settings, protected OrganisationApiHelper $helper) {
   }
 
   /**
