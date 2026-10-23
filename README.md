@@ -22,19 +22,28 @@ for setting this user field if using OpenID Connect.
 drush os2forms_organisation:lookup --help
 ```
 
-## Coding standards
+## Development
 
-```sh
-docker run --rm --interactive --tty --volume ${PWD}:/app itkdev/php8.3-fpm:latest composer install
-docker run --rm --interactive --tty --volume ${PWD}:/app itkdev/php8.3-fpm:latest composer coding-standards-check
+We use [DDEV Drupal Contrib](https://github.com/ddev/ddev-drupal-contrib) for development[^1].
 
-docker run --rm --interactive --tty --volume ${PWD}:/app node:20 yarn --cwd /app install
-docker run --rm --interactive --tty --volume ${PWD}:/app node:20 yarn --cwd /app coding-standards-check
+[^1]: The DDEV environment has been created by running
+
+      ```shell
+      ddev config --project-type=drupal10 --docroot=Drupal
+      ddev add-on get ddev/ddev-drupal-contrib
+      ddev start
+      ddev poser --no-interaction
+      ddev symlink-project
+      # Detect expected Drupal and PHP versions.
+      ddev config --update
+      ```
+
+      (cf. <https://github.com/ddev/ddev-drupal-contrib#install>)
+
+Start the show by running
+
+```shell
+task ddev:start
 ```
 
-## Code analysis
-
-```sh
-docker run --rm --interactive --tty --volume ${PWD}:/app itkdev/php8.3-fpm:latest composer install
-docker run --rm --interactive --tty --volume ${PWD}:/app itkdev/php8.3-fpm:latest composer code-analysis
-```
+Run `task` to see other useful development tasks.

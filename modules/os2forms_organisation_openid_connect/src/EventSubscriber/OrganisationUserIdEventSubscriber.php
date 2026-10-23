@@ -32,7 +32,7 @@ class OrganisationUserIdEventSubscriber implements EventSubscriberInterface {
   /**
    * Attempts settings organisation user id.
    */
-  public function setOrganisationUserId(OrganisationUserIdEvent $event) {
+  public function setOrganisationUserId(OrganisationUserIdEvent $event): void {
     // Check if id has already been set.
     if (!empty($event->getUserId())) {
       return;

@@ -14,13 +14,6 @@ use Symfony\Component\Yaml\Yaml;
 class Commands extends DrushCommands {
 
   /**
-   * The organisation helper.
-   *
-   * @var \Drupal\os2forms_organisation\Helper\OrganisationApiHelper
-   */
-  private OrganisationApiHelper $helper;
-
-  /**
    * The read options.
    *
    * @var array
@@ -31,9 +24,8 @@ class Commands extends DrushCommands {
   /**
    * Constructor.
    */
-  public function __construct(OrganisationApiHelper $helper) {
+  public function __construct(private readonly OrganisationApiHelper $helper) {
     parent::__construct();
-    $this->helper = $helper;
   }
 
   /**

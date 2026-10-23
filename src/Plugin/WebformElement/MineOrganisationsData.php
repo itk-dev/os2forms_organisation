@@ -660,7 +660,7 @@ class MineOrganisationsData extends WebformCompositeBase {
         try {
           return $this->organisationHelper->getManagerId($userId);
         }
-        catch (ApiException $e) {
+        catch (ApiException) {
           return NULL;
         }
 
@@ -698,6 +698,7 @@ class MineOrganisationsData extends WebformCompositeBase {
 
       if (!empty($query)) {
         $parents = $organisationElement['#array_parents'];
+        // @phpstan-ignore parameterByRef.type (NestedArray::getValue() does not alter $form)
         $compositeElement = &NestedArray::getValue($form, $parents);
 
         if ($this->formState->has(self::FORM_STATE_RESULT_KEY)) {
@@ -864,7 +865,7 @@ class MineOrganisationsData extends WebformCompositeBase {
     try {
       $this->brugerInformation = $this->organisationHelper->getBrugerInformationer($brugerId);
     }
-    catch (ApiException $e) {
+    catch (ApiException) {
       $this->brugerInformation = NULL;
     }
   }
@@ -876,7 +877,7 @@ class MineOrganisationsData extends WebformCompositeBase {
     try {
       $this->managerInformation = $this->organisationHelper->getManagerInformation($brugerId);
     }
-    catch (ApiException $e) {
+    catch (ApiException) {
       $this->managerInformation = NULL;
     }
   }
@@ -888,7 +889,7 @@ class MineOrganisationsData extends WebformCompositeBase {
     try {
       $this->funktionInformation = $this->organisationHelper->getFunktionInformationer($brugerId, self::DATA_DISPLAY_OPTION_MANAGER === $dataType);
     }
-    catch (ApiException $e) {
+    catch (ApiException) {
       $this->funktionInformation = NULL;
     }
   }
@@ -906,7 +907,7 @@ class MineOrganisationsData extends WebformCompositeBase {
 
       $this->organisationInformation = $organisationPathData;
     }
-    catch (ApiException $e) {
+    catch (ApiException) {
       $this->organisationInformation = NULL;
     }
   }
@@ -918,7 +919,7 @@ class MineOrganisationsData extends WebformCompositeBase {
     try {
       $this->searchInformation = $this->organisationHelper->getBrugerInformationer($brugerId);
     }
-    catch (ApiException $e) {
+    catch (ApiException) {
       $this->searchInformation = NULL;
     }
   }
@@ -943,9 +944,7 @@ class MineOrganisationsData extends WebformCompositeBase {
 
     // Computed logging string.
     $loggingString = implode(', ', array_map(
-      function ($key, $value) {
-        return $key . ':' . $value;
-      },
+      fn($key, $value) => $key . ':' . $value,
       array_keys($nonEmptyData),
       $nonEmptyData
     ));
