@@ -21,6 +21,7 @@ class MineOrganisationsData extends WebformCompositeBase {
     $elements = [];
 
     $elements['search'] = [
+      '#title' => t('User search'),
       '#type' => 'markup',
       '#attributes' => [
         'class' => ['os2forms-organisation-search'],
