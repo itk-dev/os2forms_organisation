@@ -9,7 +9,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [2.3.1] 2026-11-02
+## [2.3.1] 2026-11-24
 
 - Fixed the search button validation.
 
